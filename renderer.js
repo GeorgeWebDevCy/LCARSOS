@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let humOsc = null;
   const synth = window.speechSynthesis;
 
-  const pluginArea = document.getElementById('left-bar');
+  const pluginArea = document.getElementById('plugin-bar');
 
   function registerButton(label, handler) {
     const button = document.createElement('button');

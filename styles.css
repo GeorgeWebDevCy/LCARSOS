@@ -40,7 +40,9 @@ body {
   overflow: hidden;
 }
 
-#left-bar {
+#left-bar,
+#plugin-bar,
+.side-bar {
   width: 200px;
   background: var(--panel-bg);
   border-top-right-radius: 20px;
