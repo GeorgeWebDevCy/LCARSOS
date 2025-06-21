@@ -1,0 +1,16 @@
+[
+  {"series_id": 1, "title": "Star Trek: The Original Series", "begin": "1966-09-08", "end": "1969-06-03"},
+  {"series_id": 2, "title": "Star Trek: The Animated Series", "begin": "1973-09-08", "end": "1974-10-12"},
+  {"series_id": 3, "title": "Star Trek: The Next Generation", "begin": "1987-09-28", "end": "1994-05-23"},
+  {"series_id": 4, "title": "Star Trek: Deep Space Nine", "begin": "1993-01-03", "end": "1999-06-02"},
+  {"series_id": 5, "title": "Star Trek: Voyager", "begin": "1995-01-16", "end": "2001-05-23"},
+  {"series_id": 6, "title": "Star Trek: Enterprise", "begin": "2001-09-26", "end": "2005-05-13"},
+  {"series_id": 7, "title": "Star Trek Continues", "begin": "2013-05-26", "end": "2017-11-13"},
+  {"series_id": 8, "title": "Star Trek: Discovery", "begin": "2017-09-24", "end": "2024-05-30"},
+  {"series_id": 9, "title": "Star Trek: Short Treks", "begin": "2018-10-04", "end": "2020-01-09"},
+  {"series_id": 10, "title": "Star Trek: Picard", "begin": "2020-01-23", "end": "2023-04-20"},
+  {"series_id": 11, "title": "Star Trek: Lower Decks", "begin": "2020-08-06", "end": "2024-12-19"},
+  {"series_id": 12, "title": "Star Trek: Prodigy", "begin": "2021-10-28", "end": "2024-07-01"},
+  {"series_id": 13, "title": "Star Trek: very Short Treks", "begin": "2023-09-08", "end": "2023-10-04"},
+  {"series_id": 14, "title": "Star Trek: Strange New Worlds", "begin": "2022-05-05", "end": null}
+]

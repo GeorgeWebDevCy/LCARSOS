@@ -18,6 +18,9 @@ Clickable LCARS buttons with responsive hover effects and sound feedback.
 ✅ **Audio Feedback**
 Generates a short "beep" using the Web Audio API when buttons are clicked.
 
+✅ **Built-in Star Trek Data**
+Includes a JSON file with information about the TV series to demonstrate data integration.
+
 ✅ **Componentized Structure**  
 Easy-to-extend with new buttons, pages, animations, or data integrations.
 

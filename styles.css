@@ -1,18 +1,36 @@
+#wrapper {
+  display: flex;
+  height: 100vh;
+}
+
 body {
   margin: 0;
   background: #000;
   font-family: 'Share Tech Mono', monospace;
   color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  overflow: hidden;
 }
 
-#panel {
+#left-bar {
+  width: 200px;
   background: #9932CC;
   padding: 20px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#content {
+  flex: 1;
+  background: #000;
+  padding: 40px;
+  overflow-y: auto;
+  animation: fadeIn 1s ease forwards;
+}
+
+.hidden {
+  display: none;
 }
 
 .lcars-button {
@@ -23,8 +41,15 @@ body {
   color: #000;
   border-radius: 5px;
   cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  transition: background 0.3s ease;
 }
 
 .lcars-button:hover {
   background: #FF9966;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
