@@ -4,11 +4,14 @@
   <meta charset="UTF-8">
   <title>LCARS Interface</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="panel">
-    <button class="lcars-button" id="main-btn">Activate</button>
+  <div id="wrapper">
+    <div id="left-bar">
+      <button class="lcars-button" id="main-btn">Activate</button>
+    </div>
+    <div id="content" class="hidden"></div>
   </div>
   <script src="renderer.js"></script>
 </body>
