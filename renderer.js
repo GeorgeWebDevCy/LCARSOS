@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('main-btn');
   const quoteBtn = document.getElementById('quote-btn');
   const exitBtn = document.getElementById('exit-btn');
@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeBtn = document.getElementById('theme-btn');
   const humBtn = document.getElementById('hum-btn');
   const fullBtn = document.getElementById('fullscreen-btn');
+
+  const humBtn = document.getElementById('hum-btn');
   const clock = document.getElementById('clock');
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   let humOsc = null;
@@ -72,6 +74,49 @@ document.addEventListener('DOMContentLoaded', () => {
     playBeep();
     window.electronAPI.toggleFullscreen();
   }
+  async function loadPlugins() {
+    try {
+      const res = await fetch('plugins/plugins.json');
+      const plugins = await res.json();
+      for (const name of plugins) {
+        const mod = await import(`./plugins/${name}.js`);
+        if (mod.init) {
+          mod.init({ registerButton, playBeep });
+        }
+      }
+    } catch (err) {
+      console.error('Plugin loading failed', err);
+    }
+  }
+  loadPlugins();
+
+  const pluginArea = document.getElementById('left-bar');
+
+  function registerButton(label, handler) {
+    const button = document.createElement('button');
+    button.className = 'lcars-button';
+    button.textContent = label;
+    button.addEventListener('click', handler);
+    pluginArea.appendChild(button);
+  }
+
+  function loadFont(name, url) {
+    const font = new FontFace(name, `url(${url})`);
+    return font.load().then(() => {
+      document.fonts.add(font);
+    });
+  }
+
+  loadFont('Share Tech Mono', 'https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQ5mRY1yo.woff2');
+  loadFont('Orbitron', 'https://fonts.gstatic.com/s/orbitron/v30/yMJRMIlzdpvBhQQL_Qq7dytiyr2GqCJDM8c.woff2');
+
+  function applyStoredTheme() {
+    const theme = localStorage.getItem('lcars-theme');
+    if (theme === 'alt') {
+      document.body.setAttribute('data-theme', 'alt');
+    }
+  }
+  applyStoredTheme();
 
   async function loadPlugins() {
     try {
@@ -173,6 +218,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.code === 'F11') {
       e.preventDefault();
       toggleFullscreen();
+  themeBtn.addEventListener('click', () => {
+    playBeep();
+    const isAlt = document.body.getAttribute('data-theme') === 'alt';
+    if (isAlt) {
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('lcars-theme', 'default');
+    } else {
+      document.body.setAttribute('data-theme', 'alt');
+      localStorage.setItem('lcars-theme', 'alt');
     }
   });
 

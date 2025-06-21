@@ -78,7 +78,6 @@ Switch between fullscreen and windowed mode using the button or <kbd>F11</kbd>.
 ✅ **Starship Status Plugin**
 Displays random ship metrics like warp core output and shield strength.
 
----
 
 ## 📁 Project Structure
 
