@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('main-btn');
+  const exitBtn = document.getElementById('exit-btn');
+  const clock = document.getElementById('clock');
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function updateClock() {
+    const now = new Date();
+    clock.textContent = now.toLocaleTimeString();
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
 
   function playBeep() {
     const osc = ctx.createOscillator();
@@ -29,5 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
         content.classList.remove('hidden');
         btn.textContent = 'Activate';
       });
+  });
+
+  exitBtn.addEventListener('click', () => {
+    window.electronAPI.closeApp();
   });
 });

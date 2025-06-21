@@ -21,14 +21,20 @@ Generates a short "beep" using the Web Audio API when buttons are clicked.
 ✅ **Built-in Star Trek Data**
 Includes a JSON file with information about the TV series to demonstrate data integration.
 
-✅ **Componentized Structure**  
+✅ **Componentized Structure**
 Easy-to-extend with new buttons, pages, animations, or data integrations.
 
 ✅ **No Local Assets Required**
 Fonts are loaded from Google Fonts and sounds are generated dynamically.
 
-✅ **Fullscreen-Ready**  
+✅ **Fullscreen-Ready**
 Can be run in fullscreen or kiosk mode — perfect for touch panels or retro setups.
+
+✅ **Real-Time Clock**
+Displays the current system time in the interface.
+
+✅ **Exit Button**
+Quickly close the application from the UI.
 
 ---
 
