@@ -1,3 +1,19 @@
+:root {
+  --panel-bg: #9932CC;
+  --button-bg: #FF6633;
+  --button-bg-hover: #FF9966;
+  --top-bg: #330066;
+  --text-color: #fff;
+  --body-bg: #000;
+}
+
+body[data-theme='alt'] {
+  --panel-bg: #003366;
+  --button-bg: #6699FF;
+  --button-bg-hover: #99BBFF;
+  --top-bg: #001133;
+}
+
 #wrapper {
   display: flex;
   height: 100vh;
@@ -12,21 +28,21 @@
   gap: 10px;
   align-items: center;
   font-family: 'Orbitron', sans-serif;
-  background: #330066;
+  background: var(--top-bg);
   border-bottom-left-radius: 20px;
 }
 
 body {
   margin: 0;
-  background: #000;
+  background: var(--body-bg);
   font-family: 'Share Tech Mono', monospace;
-  color: #fff;
+  color: var(--text-color);
   overflow: hidden;
 }
 
 #left-bar {
   width: 200px;
-  background: #9932CC;
+  background: var(--panel-bg);
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   padding: 20px;
@@ -39,7 +55,7 @@ body {
 
 #content {
   flex: 1;
-  background: #000;
+  background: var(--body-bg);
   padding: 40px;
   overflow-y: auto;
   animation: fadeIn 1s ease forwards;
@@ -51,7 +67,7 @@ body {
 }
 
 .lcars-button {
-  background: #FF6633;
+  background: var(--button-bg);
   border: none;
   padding: 15px 30px;
   font-size: 1.2em;
@@ -68,7 +84,7 @@ body {
 }
 
 .lcars-button:hover {
-  background: #FF9966;
+  background: var(--button-bg-hover);
 }
 
 @keyframes fadeIn {

@@ -51,6 +51,33 @@ Rounded panels and colored bars provide a closer LCARS look and feel.
 ✅ **Randomized Beeps**
 Each interaction plays a slightly different tone for more authentic feedback.
 
+✅ **Theme Switcher**
+Toggle between predefined color themes at runtime.
+
+✅ **Dynamic Font Loading**
+Fonts are loaded programmatically for better control and caching.
+
+✅ **Plugin System**
+External JavaScript modules can register new buttons and panels.
+
+✅ **System Status Plugin**
+Ships with an example plugin that shows live system information.
+
+✅ **Weather Plugin**
+Displays current weather using the Open‑Meteo API.
+
+✅ **Ambient Hum Toggle**
+Simulates a bridge background sound that can be enabled or disabled.
+
+✅ **Theme Hotkey**
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to switch themes instantly.
+
+✅ **Fullscreen Toggle**
+Switch between fullscreen and windowed mode using the button or <kbd>F11</kbd>.
+
+✅ **Starship Status Plugin**
+Displays random ship metrics like warp core output and shield strength.
+
 ---
 
 ## 📁 Project Structure

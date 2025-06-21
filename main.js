@@ -25,6 +25,13 @@ ipcMain.on('close-app', () => {
   app.quit();
 });
 
+ipcMain.on('toggle-fullscreen', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    win.setFullScreen(!win.isFullScreen());
+  }
+});
+
 ipcMain.handle('get-system-info', () => {
   const os = require('os');
   return {
