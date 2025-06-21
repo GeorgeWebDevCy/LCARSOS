@@ -38,7 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate = 1.0;
     const voices = synth.getVoices();
-    const voice = voices.find(v => /en/i.test(v.lang));
+    const stored = localStorage.getItem('lcars-voice');
+    let voice = null;
+    if (stored) {
+      voice = voices.find(v => v.name === stored);
+    }
+    if (!voice) {
+      voice = voices.find(v => /en/i.test(v.lang));
+    }
     if (voice) utter.voice = voice;
     synth.speak(utter);
   }
