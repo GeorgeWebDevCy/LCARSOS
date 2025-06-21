@@ -24,3 +24,13 @@ app.on('window-all-closed', () => {
 ipcMain.on('close-app', () => {
   app.quit();
 });
+
+ipcMain.handle('get-system-info', () => {
+  const os = require('os');
+  return {
+    platform: os.platform(),
+    arch: os.arch(),
+    cpus: os.cpus().length,
+    memory: Math.round(os.totalmem() / (1024 * 1024 * 1024))
+  };
+});

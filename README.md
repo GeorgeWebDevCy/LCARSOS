@@ -39,6 +39,18 @@ Quickly close the application from the UI.
 ✅ **Random Quote Generator**
 Displays a random Star Trek quote when you press the new button.
 
+✅ **System Info Panel**
+Shows basic information about your computer such as platform, CPU cores and memory.
+
+✅ **Clear Button**
+Quickly hide the content panel and return to the idle screen.
+
+✅ **Enhanced LCARS Styling**
+Rounded panels and colored bars provide a closer LCARS look and feel.
+
+✅ **Randomized Beeps**
+Each interaction plays a slightly different tone for more authentic feedback.
+
 ---
 
 ## 📁 Project Structure
