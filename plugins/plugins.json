@@ -4,5 +4,7 @@
   "starshipStatus",
   "stardate",
   "starChart",
-  "scanner"
+  "scanner",
+  "planetView",
+  "transmission"
 ]

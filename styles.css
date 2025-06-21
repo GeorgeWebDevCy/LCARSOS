@@ -167,3 +167,28 @@ body {
   background: #000;
   display: block;
 }
+
+/* Transmission plugin */
+.transmission {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+.transmission-logo {
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+}
+.transmission-title {
+  font-size: 48px;
+  color: #ff9933;
+  margin: 0;
+  padding: 10px;
+  background: #090909;
+}
+.transmission-subtitle {
+  font-size: 24px;
+  color: #99ccff;
+  margin: 0;
+  padding: 10px;
+  background: #090909;
+}

@@ -39,4 +39,11 @@ This document outlines the recommended order for implementing the major LCARS OS
 ## 8. Fullscreen Toggle
 - Add a button and <kbd>F11</kbd> hotkey to switch between fullscreen and windowed mode.
 
+## 9. Scanner and Transmission
+- Implement a forward scanner overlay for dramatic scans.
+- Create a transmission screen showing incoming messages.
+
+## 10. 3D Planet View
+- Display a rotating 3D planet using Three.js for added flair.
+
 Use this roadmap as a starting point for development. Tackle each feature sequentially to build a solid LCARS-inspired interface.
