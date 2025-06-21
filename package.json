@@ -1,0 +1,15 @@
+{
+  "name": "lcarsos",
+  "version": "1.0.0",
+  "description": "A customizable Electron-based desktop interface inspired by the **LCARS** (Library Computer Access/Retrieval System) from *Star Trek*. This template provides a retro-futuristic UI using modern web technologies and is ideal for kiosks, dashboards, smart home interfaces, or just geeking out.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron --no-sandbox ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^36.5.0"
+  }
+}

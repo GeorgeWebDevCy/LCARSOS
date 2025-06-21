@@ -15,14 +15,14 @@ Rounded elements, bold colors, and Eurostile-style fonts emulating the Star Trek
 ✅ **Interactive Buttons**  
 Clickable LCARS buttons with responsive hover effects and sound feedback.
 
-✅ **Audio Feedback**  
-Includes a sample "beep" sound triggered by UI interactions (easily expandable).
+✅ **Audio Feedback**
+Generates a short "beep" using the Web Audio API when buttons are clicked.
 
 ✅ **Componentized Structure**  
 Easy-to-extend with new buttons, pages, animations, or data integrations.
 
-✅ **Asset Support**  
-Modular `assets/` folder for sounds, fonts, and other media files.
+✅ **No Local Assets Required**
+Fonts are loaded from Google Fonts and sounds are generated dynamically.
 
 ✅ **Fullscreen-Ready**  
 Can be run in fullscreen or kiosk mode — perfect for touch panels or retro setups.
@@ -33,9 +33,6 @@ Can be run in fullscreen or kiosk mode — perfect for touch panels or retro set
 
 ```
 .
-├── assets/
-│   ├── fonts/              # Custom LCARS-style fonts (e.g., Eurostile)
-│   └── sounds/             # UI sound effects (e.g., beep.mp3)
 ├── index.html              # Main HTML structure
 ├── styles.css              # LCARS UI styling
 ├── renderer.js             # Frontend interactivity
@@ -72,9 +69,9 @@ npm start
 
 ## 🎨 Customization Tips
 
-- **Fonts**: Replace `assets/fonts/Eurostile.ttf` with any LCARS-style font you prefer.
+ - **Fonts**: Update the Google Fonts link in `index.html` to use any LCARS-style font you prefer.
 - **Colors**: Modify `styles.css` to change button or panel colors to match different LCARS eras.
-- **Sounds**: Replace `beep.mp3` or add more sound files and trigger them via JavaScript.
+ - **Sounds**: Tweak the oscillator settings in `renderer.js` to change the beep tone or duration.
 - **Kiosk Mode**: Change `fullscreen: false` to `true` in `main.js` for a full-screen interface.
 
 ---
