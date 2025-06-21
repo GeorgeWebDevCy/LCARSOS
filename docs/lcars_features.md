@@ -8,6 +8,7 @@ Below is a short overview of the imported concepts:
 - **3D Planet View** – renders a rotating planet model using Three.js.
 - **Omega Directive page** – shows the iconic omega symbol and classified notice.
 - **Numbers Table** – streams random numbers in a grid inspired by the LCARS demo.
+- **Warp Field Output** – animated gauges showing fictitious warp core metrics.
 
 These features were adapted into plugins so they can be toggled from the LCARS sidebar.
 

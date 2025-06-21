@@ -217,3 +217,28 @@ body {
 .numbers-cell {
   padding: 0 4px;
 }
+
+/* Warp Field plugin */
+.warp-output {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.warp-bar {
+  background: #222;
+  border-radius: 10px;
+  height: 24px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+.warp-bar-fill {
+  background: linear-gradient(to right, #36c, #9cf);
+  height: 100%;
+  width: 0;
+  color: #fff;
+  line-height: 24px;
+  font-family: 'Orbitron', sans-serif;
+  text-align: right;
+  padding-right: 10px;
+  transition: width 0.5s ease;
+}
