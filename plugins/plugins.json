@@ -2,5 +2,6 @@
   "systemStatus",
   "weather",
   "starshipStatus",
-  "stardate"
+  "stardate",
+  "scanner"
 ]
