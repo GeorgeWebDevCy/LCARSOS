@@ -87,6 +87,8 @@ Shows the current stardate calculated from the system clock.
 Shows a simple star map with labeled systems.
 ✅ **Forward Scanner Plugin**
 Animated LCARS-style scanning overlay.
+✅ **Warp Field Output Plugin**
+Animated warp engine gauges with random readouts.
 ✅ **Planet 3D Plugin**
 Rotating 3D planet rendered with Three.js.
 ✅ **Incoming Transmission Plugin**
