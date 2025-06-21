@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('main-btn');
+  const quoteBtn = document.getElementById('quote-btn');
   const exitBtn = document.getElementById('exit-btn');
   const clock = document.getElementById('clock');
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -37,6 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
         content.appendChild(list);
         content.classList.remove('hidden');
         btn.textContent = 'Activate';
+      });
+  });
+
+  quoteBtn.addEventListener('click', () => {
+    playBeep();
+    quoteBtn.textContent = 'Loading...';
+    fetch('star_trek_quotes.json')
+      .then(res => res.json())
+      .then(data => {
+        const content = document.getElementById('content');
+        const random = data[Math.floor(Math.random() * data.length)];
+        content.innerHTML = `<h2>${random.author}</h2><p>${random.text}</p>`;
+        content.classList.remove('hidden');
+        quoteBtn.textContent = 'Random Quote';
       });
   });
 

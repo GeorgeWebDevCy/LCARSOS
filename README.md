@@ -19,7 +19,7 @@ Clickable LCARS buttons with responsive hover effects and sound feedback.
 Generates a short "beep" using the Web Audio API when buttons are clicked.
 
 ✅ **Built-in Star Trek Data**
-Includes a JSON file with information about the TV series to demonstrate data integration.
+Includes JSON files with information about the TV series and famous quotes to demonstrate data integration.
 
 ✅ **Componentized Structure**
 Easy-to-extend with new buttons, pages, animations, or data integrations.
@@ -36,6 +36,9 @@ Displays the current system time in the interface.
 ✅ **Exit Button**
 Quickly close the application from the UI.
 
+✅ **Random Quote Generator**
+Displays a random Star Trek quote when you press the new button.
+
 ---
 
 ## 📁 Project Structure
@@ -47,6 +50,8 @@ Quickly close the application from the UI.
 ├── renderer.js             # Frontend interactivity
 ├── preload.js              # (Optional) preload logic
 ├── main.js                 # Electron app launcher
+├── star_trek_series.json   # Sample data file with series info
+├── star_trek_quotes.json   # Famous quotes used by the app
 ├── package.json            # App metadata and dependencies
 └── README.md               # You're here!
 ```
