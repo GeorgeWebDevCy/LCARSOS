@@ -1,6 +1,7 @@
-export function init({ registerButton, playBeep }) {
+export function init({ registerButton, playBeep, speak }) {
   registerButton('Weather', async () => {
     playBeep();
+    speak('Fetching weather report');
     const content = document.getElementById('content');
     content.innerHTML = '<h2>Weather</h2><div id="weather-panel">Loading...</div>';
     content.classList.remove('hidden');
@@ -20,6 +21,7 @@ export function init({ registerButton, playBeep }) {
             <li>Wind Speed: ${weather.windspeed} km/h</li>
             <li>Conditions: ${weather.weathercode}</li>
           </ul>`;
+        speak(`Current temperature ${weather.temperature} degrees`);
       }
     } catch (err) {
       console.error('Weather fetch failed', err);

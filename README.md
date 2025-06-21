@@ -18,6 +18,9 @@ Clickable LCARS buttons with responsive hover effects and sound feedback.
 ✅ **Audio Feedback**
 Generates a short "beep" using the Web Audio API when buttons are clicked.
 
+✅ **LCARS Voice**
+Each action is accompanied by speech using the Web Speech API.
+
 ✅ **Built-in Star Trek Data**
 Includes JSON files with information about the TV series and famous quotes to demonstrate data integration.
 
@@ -77,6 +80,9 @@ Switch between fullscreen and windowed mode using the button or <kbd>F11</kbd>.
 
 ✅ **Starship Status Plugin**
 Displays random ship metrics like warp core output and shield strength.
+
+✅ **Stardate Plugin**
+Shows the current stardate calculated from the system clock.
 
 
 ## 📁 Project Structure

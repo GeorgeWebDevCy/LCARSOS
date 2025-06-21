@@ -1,6 +1,7 @@
-export function init({ registerButton, playBeep }) {
+export function init({ registerButton, playBeep, speak }) {
   registerButton('Starship', () => {
     playBeep();
+    speak('Displaying starship status');
     const content = document.getElementById('content');
     content.innerHTML = '<h2>Starship Status</h2><div id="ship-status">Loading...</div>';
     content.classList.remove('hidden');

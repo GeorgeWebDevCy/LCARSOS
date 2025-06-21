@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const clock = document.getElementById('clock');
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   let humOsc = null;
+  const synth = window.speechSynthesis;
 
   const pluginArea = document.getElementById('left-bar');
 
@@ -31,6 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFont('Share Tech Mono', 'https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQ5mRY1yo.woff2');
   loadFont('Orbitron', 'https://fonts.gstatic.com/s/orbitron/v30/yMJRMIlzdpvBhQQL_Qq7dytiyr2GqCJDM8c.woff2');
 
+  function speak(text) {
+    if (!synth) return;
+    if (synth.speaking) synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.0;
+    const voices = synth.getVoices();
+    const voice = voices.find(v => /en/i.test(v.lang));
+    if (voice) utter.voice = voice;
+    synth.speak(utter);
+  }
+
   function applyStoredTheme() {
     const theme = localStorage.getItem('lcars-theme');
     if (theme === 'alt') {
@@ -45,9 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAlt) {
       document.body.removeAttribute('data-theme');
       localStorage.setItem('lcars-theme', 'default');
+      speak('Default theme activated');
     } else {
       document.body.setAttribute('data-theme', 'alt');
       localStorage.setItem('lcars-theme', 'alt');
+      speak('Alternate theme engaged');
     }
   }
 
@@ -58,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       humOsc.disconnect();
       humOsc = null;
       humBtn.textContent = 'Hum';
+      speak('Ambient hum disabled');
     } else {
       humOsc = ctx.createOscillator();
       humOsc.frequency.value = 50;
@@ -65,11 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
       humOsc.connect(ctx.destination);
       humOsc.start();
       humBtn.textContent = 'Mute';
+      speak('Ambient hum enabled');
     }
   }
 
   function toggleFullscreen() {
     playBeep();
+    speak('Toggling fullscreen');
     window.electronAPI.toggleFullscreen();
   }
 
@@ -80,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
       for (const name of plugins) {
         const mod = await import(`./plugins/${name}.js`);
         if (mod.init) {
-          mod.init({ registerButton, playBeep });
+          mod.init({ registerButton, playBeep, speak });
         }
       }
     } catch (err) {
@@ -107,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btn.addEventListener('click', () => {
     playBeep();
+    speak('Accessing series database');
     btn.textContent = 'Loading...';
     fetch('star_trek_series.json')
       .then(res => res.json())
@@ -122,12 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
         content.appendChild(list);
         content.classList.remove('hidden');
         btn.textContent = 'Activate';
+        speak('Displaying Star Trek series');
       });
   });
 
   quoteBtn.addEventListener('click', () => {
     playBeep();
     quoteBtn.textContent = 'Loading...';
+    speak('Fetching quote');
     fetch('star_trek_quotes.json')
       .then(res => res.json())
       .then(data => {
@@ -136,11 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
         content.innerHTML = `<h2>${random.author}</h2><p>${random.text}</p>`;
         content.classList.remove('hidden');
         quoteBtn.textContent = 'Random Quote';
+        speak(random.text);
       });
   });
 
   sysInfoBtn.addEventListener('click', async () => {
     playBeep();
+    speak('Gathering system information');
     sysInfoBtn.textContent = 'Loading...';
     const info = await window.electronAPI.getSystemInfo();
     const content = document.getElementById('content');
@@ -153,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </ul>`;
     content.classList.remove('hidden');
     sysInfoBtn.textContent = 'System Info';
+    speak('System information displayed');
   });
 
   clearBtn.addEventListener('click', () => {
@@ -160,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = document.getElementById('content');
     content.classList.add('hidden');
     content.innerHTML = '';
+    speak('Display cleared');
   });
 
   themeBtn.addEventListener('click', toggleTheme);
@@ -177,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   exitBtn.addEventListener('click', () => {
+    speak('Shutting down');
     window.electronAPI.closeApp();
   });
 });

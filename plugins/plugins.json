@@ -1,5 +1,6 @@
 [
   "systemStatus",
-  "weather"
-  "systemStatus"
+  "weather",
+  "starshipStatus",
+  "stardate"
 ]

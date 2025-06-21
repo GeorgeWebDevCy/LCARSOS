@@ -1,6 +1,7 @@
-export function init({ registerButton, playBeep }) {
+export function init({ registerButton, playBeep, speak }) {
   registerButton('Status', async () => {
     playBeep();
+    speak('Displaying system status');
     const content = document.getElementById('content');
     content.innerHTML = '<h2>System Status</h2><div id="status-panel">Loading...</div>';
     content.classList.remove('hidden');
