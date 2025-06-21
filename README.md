@@ -83,7 +83,8 @@ Displays random ship metrics like warp core output and shield strength.
 
 ✅ **Stardate Plugin**
 Shows the current stardate calculated from the system clock.
-
+✅ **Star Chart Plugin**
+Shows a simple star map with labeled systems.
 
 ## 📁 Project Structure
 
@@ -96,6 +97,7 @@ Shows the current stardate calculated from the system clock.
 ├── main.js                 # Electron app launcher
 ├── star_trek_series.json   # Sample data file with series info
 ├── star_trek_quotes.json   # Famous quotes used by the app
+├── plugins/star-systems.json   # Star names for the star chart plugin
 ├── package.json            # App metadata and dependencies
 └── README.md               # You're here!
 ```
