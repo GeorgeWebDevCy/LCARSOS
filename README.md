@@ -85,6 +85,12 @@ Displays random ship metrics like warp core output and shield strength.
 Shows the current stardate calculated from the system clock.
 ✅ **Star Chart Plugin**
 Shows a simple star map with labeled systems.
+✅ **Forward Scanner Plugin**
+Animated LCARS-style scanning overlay.
+✅ **Planet 3D Plugin**
+Rotating 3D planet rendered with Three.js.
+✅ **Incoming Transmission Plugin**
+Displays a Starfleet command message with logo.
 
 ## 📁 Project Structure
 
