@@ -20,6 +20,8 @@ Generates a short "beep" using the Web Audio API when buttons are clicked.
 
 ✅ **LCARS Voice**
 Each action is accompanied by speech using the Web Speech API.
+✅ **Voice Selection Plugin**
+Choose your preferred speech synthesis voice, stored for future sessions.
 
 ✅ **Built-in Star Trek Data**
 Includes JSON files with information about the TV series and famous quotes to demonstrate data integration.
@@ -97,6 +99,12 @@ Displays a Starfleet command message with logo.
 Shows the iconic omega symbol and secret protocol text.
 ✅ **Numbers Table Plugin**
 Generates rows of random digits like the original LCARS demo.
+
+## 🎤 Voice Selection
+
+Use the **Voice** button in the sidebar to pick from any installed speech
+synthesis voices. Your choice is saved in local storage so the interface will
+continue speaking with that voice on the next launch.
 
 ## 📁 Project Structure
 
