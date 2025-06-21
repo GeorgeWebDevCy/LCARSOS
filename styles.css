@@ -192,3 +192,28 @@ body {
   padding: 10px;
   background: #090909;
 }
+
+/* Omega Directive plugin */
+.omega-directive {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+.omega-directive img {
+  max-width: 400px;
+  margin: 20px auto;
+  display: block;
+}
+
+/* Numbers Table plugin */
+.numbers-container {
+  font-family: 'Share Tech Mono', monospace;
+  color: #9cf;
+}
+.numbers-row {
+  display: flex;
+  justify-content: center;
+  margin: 2px 0;
+}
+.numbers-cell {
+  padding: 0 4px;
+}

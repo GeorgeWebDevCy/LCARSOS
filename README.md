@@ -91,6 +91,10 @@ Animated LCARS-style scanning overlay.
 Rotating 3D planet rendered with Three.js.
 ✅ **Incoming Transmission Plugin**
 Displays a Starfleet command message with logo.
+✅ **Omega Directive Plugin**
+Shows the iconic omega symbol and secret protocol text.
+✅ **Numbers Table Plugin**
+Generates rows of random digits like the original LCARS demo.
 
 ## 📁 Project Structure
 
