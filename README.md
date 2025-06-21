@@ -63,7 +63,14 @@ External JavaScript modules can register new buttons and panels.
 ✅ **System Status Plugin**
 Ships with an example plugin that shows live system information.
 
----
+✅ **Weather Plugin**
+Displays current weather using the Open‑Meteo API.
+
+✅ **Ambient Hum Toggle**
+Simulates a bridge background sound that can be enabled or disabled.
+
+✅ **Theme Hotkey**
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to switch themes instantly.
 
 ## 📁 Project Structure
 

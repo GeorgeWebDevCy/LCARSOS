@@ -27,4 +27,10 @@ This document outlines the recommended order for implementing the major LCARS OS
 - Ambient bridge sounds or voice feedback.
 - Hotkeys, gestures, and kiosk mode options.
 
+## 6. Weather Plugin & Ambient Sound
+- Implement a plugin that fetches weather data from a free API and displays it in the interface.
+- Add an ambient "hum" toggle with a persistent oscillator for background atmosphere.
+- Include a keyboard shortcut (Ctrl+Shift+T) to toggle themes quickly.
+
+
 Use this roadmap as a starting point for development. Tackle each feature sequentially to build a solid LCARS-inspired interface.
