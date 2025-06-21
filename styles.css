@@ -12,6 +12,8 @@
   gap: 10px;
   align-items: center;
   font-family: 'Orbitron', sans-serif;
+  background: #330066;
+  border-bottom-left-radius: 20px;
 }
 
 body {
@@ -25,6 +27,8 @@ body {
 #left-bar {
   width: 200px;
   background: #9932CC;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -39,6 +43,7 @@ body {
   padding: 40px;
   overflow-y: auto;
   animation: fadeIn 1s ease forwards;
+  font-size: 1.1em;
 }
 
 .hidden {
