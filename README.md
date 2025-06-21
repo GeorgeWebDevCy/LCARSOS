@@ -72,8 +72,6 @@ Simulates a bridge background sound that can be enabled or disabled.
 ✅ **Theme Hotkey**
 Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to switch themes instantly.
 
----
-
 ## 📁 Project Structure
 
 ```

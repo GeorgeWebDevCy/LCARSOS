@@ -32,4 +32,5 @@ This document outlines the recommended order for implementing the major LCARS OS
 - Add an ambient "hum" toggle with a persistent oscillator for background atmosphere.
 - Include a keyboard shortcut (Ctrl+Shift+T) to toggle themes quickly.
 
+
 Use this roadmap as a starting point for development. Tackle each feature sequentially to build a solid LCARS-inspired interface.
