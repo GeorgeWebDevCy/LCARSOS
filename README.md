@@ -72,6 +72,13 @@ Simulates a bridge background sound that can be enabled or disabled.
 ✅ **Theme Hotkey**
 Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to switch themes instantly.
 
+✅ **Fullscreen Toggle**
+Switch between fullscreen and windowed mode using the button or <kbd>F11</kbd>.
+
+✅ **Starship Status Plugin**
+Displays random ship metrics like warp core output and shield strength.
+
+
 ## 📁 Project Structure
 
 ```

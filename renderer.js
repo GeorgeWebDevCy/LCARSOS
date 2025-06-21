@@ -1,10 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('main-btn');
   const quoteBtn = document.getElementById('quote-btn');
   const exitBtn = document.getElementById('exit-btn');
   const sysInfoBtn = document.getElementById('sysinfo-btn');
   const clearBtn = document.getElementById('clear-btn');
   const themeBtn = document.getElementById('theme-btn');
+  const humBtn = document.getElementById('hum-btn');
+  const fullBtn = document.getElementById('fullscreen-btn');
 
   const humBtn = document.getElementById('hum-btn');
   const clock = document.getElementById('clock');
@@ -68,6 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function toggleFullscreen() {
+    playBeep();
+    window.electronAPI.toggleFullscreen();
+  }
   async function loadPlugins() {
     try {
       const res = await fetch('plugins/plugins.json');
@@ -203,10 +209,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeBtn.addEventListener('click', toggleTheme);
   humBtn.addEventListener('click', toggleHum);
+  fullBtn.addEventListener('click', toggleFullscreen);
 
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') {
       toggleTheme();
+    }
+    if (e.code === 'F11') {
+      e.preventDefault();
+      toggleFullscreen();
   themeBtn.addEventListener('click', () => {
     playBeep();
     const isAlt = document.body.getAttribute('data-theme') === 'alt';

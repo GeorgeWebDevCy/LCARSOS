@@ -32,5 +32,11 @@ This document outlines the recommended order for implementing the major LCARS OS
 - Add an ambient "hum" toggle with a persistent oscillator for background atmosphere.
 - Include a keyboard shortcut (Ctrl+Shift+T) to toggle themes quickly.
 
+## 7. Starship Status Simulator
+- Create a plugin that displays fictional ship metrics like warp core output.
+- Randomize values and update them periodically for a lively display.
+
+## 8. Fullscreen Toggle
+- Add a button and <kbd>F11</kbd> hotkey to switch between fullscreen and windowed mode.
 
 Use this roadmap as a starting point for development. Tackle each feature sequentially to build a solid LCARS-inspired interface.
