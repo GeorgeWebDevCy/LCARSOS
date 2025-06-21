@@ -46,4 +46,10 @@ This document outlines the recommended order for implementing the major LCARS OS
 ## 10. 3D Planet View
 - Display a rotating 3D planet using Three.js for added flair.
 
+## 11. Omega Directive Page
+- Provide a plugin that displays the omega directive symbol with a security notice.
+
+## 12. Numbers Table
+- Animate rows of random digits similar to the louh/lcars demo for additional ambience.
+
 Use this roadmap as a starting point for development. Tackle each feature sequentially to build a solid LCARS-inspired interface.
