@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  background: #000;
+  font-family: 'Share Tech Mono', monospace;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#panel {
+  background: #9932CC;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.lcars-button {
+  background: #FF6633;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  color: #000;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.lcars-button:hover {
+  background: #FF9966;
+}
