@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -8,30 +8,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="wrapper">
+  <div id="app">
+
+    <!-- ===== Top Header Bar ===== -->
     <div id="top-bar">
-      <span id="clock"></span>
+      <span id="lcars-title">LCARS</span>
+      <div class="top-divider"></div>
+      <span id="stardate-display">SD ----.--</span>
+      <div class="top-spacer"></div>
+      <span id="clock">--:--:--</span>
+      <div class="top-divider"></div>
       <button class="lcars-button small" id="theme-btn">Theme</button>
       <button class="lcars-button small" id="hum-btn">Hum</button>
+      <button class="lcars-button small" id="alert-btn">Alert</button>
       <button class="lcars-button small" id="fullscreen-btn">Full</button>
       <button class="lcars-button small" id="exit-btn">Exit</button>
     </div>
-    <div id="left-bar">
-      <div class="elbow-top"></div>
-      <div class="buttons-container">
-        <button class="lcars-button" id="main-btn">Activate</button>
-        <button class="lcars-button" id="quote-btn">Quote</button>
-        <button class="lcars-button" id="sysinfo-btn">SysInfo</button>
-        <button class="lcars-button" id="clear-btn">Clear</button>
+
+    <!-- ===== Top Elbow Row ===== -->
+    <div class="elbow-row" id="elbow-top">
+      <div class="elbow-piece elbow-left"></div>
+      <div class="elbow-gap"></div>
+      <div class="elbow-piece elbow-right"></div>
+    </div>
+
+    <!-- ===== Main Body ===== -->
+    <div id="body-section">
+
+      <!-- Left sidebar: main nav buttons -->
+      <div id="left-bar">
+        <div class="buttons-container">
+          <button class="lcars-button" id="main-btn">Database</button>
+          <button class="lcars-button btn-purple" id="quote-btn">Quote</button>
+          <button class="lcars-button btn-blue" id="sysinfo-btn">System</button>
+          <div class="sidebar-gap"></div>
+          <button class="lcars-button btn-yellow" id="clear-btn">Clear</button>
+        </div>
       </div>
-      <div class="elbow-bottom"></div>
+
+      <!-- Content area -->
+      <div id="content"></div>
+
+      <!-- Right sidebar: plugins -->
+      <div id="plugin-bar">
+        <div class="buttons-container" id="plugin-buttons"></div>
+      </div>
+
     </div>
-    <div id="content" class="hidden"></div>
-    <div id="plugin-bar">
-      <div class="elbow-top"></div>
-      <div class="buttons-container"></div>
-      <div class="elbow-bottom"></div>
+
+    <!-- ===== Bottom Elbow Row ===== -->
+    <div class="elbow-row" id="elbow-bot">
+      <div class="elbow-piece elbow-left bottom"></div>
+      <div class="elbow-gap"></div>
+      <div class="elbow-piece elbow-right bottom"></div>
     </div>
+
+    <!-- ===== Status Bar ===== -->
+    <div id="status-bar">
+      <div id="alert-indicator">
+        <span id="alert-dot" class="alert-dot normal"></span>
+        <span id="alert-label">NORMAL OPERATIONS</span>
+      </div>
+      <div class="status-divider"></div>
+      <span id="stardate-footer">STARDATE ----.--</span>
+      <div class="status-spacer"></div>
+      <span id="last-action-text">SYSTEM READY</span>
+    </div>
+
   </div>
   <script type="module" src="renderer.js"></script>
 </body>
