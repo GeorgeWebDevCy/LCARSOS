@@ -720,6 +720,58 @@ body.alert-red #top-bar {
   gap: 20px;
 }
 
+.scanner-stage {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border: 1px solid rgba(153, 204, 255, 0.18);
+  background:
+    radial-gradient(circle at center, rgba(80, 120, 255, 0.08), transparent 45%),
+    linear-gradient(180deg, rgba(0, 30, 60, 0.4), rgba(0, 0, 0, 0.65)),
+    #020508;
+}
+
+.scanner-stage.locked .scanner > div:first-child {
+  animation-play-state: paused;
+  opacity: 0.22;
+}
+
+.scanner-contact-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scanner-contact-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8fc7ff;
+  opacity: 0.55;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.scanner-contact-marker.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.scanner-contact-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffd37a;
+  box-shadow: 0 0 10px rgba(255, 211, 122, 0.6);
+}
+
+.scanner-contact-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7em;
+  letter-spacing: 2px;
+}
+
 .scanner-data { font-family: 'Share Tech Mono', monospace; }
 
 #scan-progress {
@@ -727,6 +779,36 @@ body.alert-red #top-bar {
   margin-bottom: 14px;
   font-family: 'Orbitron', sans-serif;
   font-size: 0.82em;
+  letter-spacing: 2px;
+}
+
+.scanner-analysis {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 153, 0, 0.08);
+  border-left: 4px solid var(--lcars-orange);
+}
+
+.scanner-analysis-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.68em;
+  letter-spacing: 2px;
+  color: var(--lcars-orange);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.scanner-analysis-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.94em;
+  color: #fff;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.scanner-analysis-body {
+  color: #b9d6f4;
+  line-height: 1.55;
 }
 
 #detected-objects {
@@ -742,6 +824,19 @@ body.alert-red #top-bar {
   padding: 8px 12px;
   background: rgba(0,80,180,0.15);
   border-left: 4px solid var(--lcars-ltblue);
+  color: inherit;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
+}
+
+.detected-object.active {
+  background: rgba(255, 153, 0, 0.16);
+  border-left-color: var(--lcars-orange);
+  transform: translateX(4px);
 }
 
 .obj-type            { color: #fff; font-weight: bold; }
