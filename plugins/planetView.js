@@ -30,21 +30,15 @@ export function init({ registerButton, playBeep, speak }) {
     if (window.THREE) return Promise.resolve(window.THREE);
     if (threePromise) return threePromise;
 
-    threePromise = new Promise((resolve, reject) => {
-      const existing = document.querySelector('script[data-lcars-three]');
-      if (existing) {
-        existing.addEventListener('load', () => resolve(window.THREE), { once: true });
-        existing.addEventListener('error', () => reject(new Error('Three.js failed to load.')), { once: true });
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/three@0.173.0/build/three.min.js';
-      script.dataset.lcarsThree = 'true';
-      script.onload = () => resolve(window.THREE);
-      script.onerror = () => reject(new Error('Unable to load Three.js from the CDN.'));
-      document.head.appendChild(script);
-    });
+    threePromise = import('../vendor/three.module.min.js')
+      .then((module) => {
+        const three = module.default || module;
+        window.THREE = three;
+        return three;
+      })
+      .catch(() => {
+        throw new Error('Unable to load local Three.js module.');
+      });
 
     return threePromise;
   }
