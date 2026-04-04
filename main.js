@@ -2,13 +2,14 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-const logDir = app.getPath('userData');
-const logFile = path.join(logDir, 'lcars.log');
+let logFile = null;
 
 function log(level, message) {
   const timestamp = new Date().toISOString();
   const entry = `[${timestamp}] [${level}] ${message}\n`;
-  fs.appendFileSync(logFile, entry);
+  if (logFile) {
+    try { fs.appendFileSync(logFile, entry); } catch (_) {}
+  }
   console.log(entry.trim());
 }
 
@@ -24,11 +25,14 @@ process.on('unhandledRejection', (reason) => {
 function createWindow() {
   log('INFO', 'Creating main window');
   const win = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: 1280,
+    height: 800,
     fullscreen: true,
+    backgroundColor: '#000000',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     }
   });
   win.loadFile('index.html');
@@ -36,6 +40,13 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Initialise log file now that app is ready
+  try {
+    const logDir = app.getPath('userData');
+    logFile = path.join(logDir, 'lcars.log');
+  } catch (e) {
+    console.error('Could not get userData path:', e.message);
+  }
   log('INFO', 'App starting');
   createWindow();
 });
@@ -76,10 +87,10 @@ ipcMain.on('log', (event, level, message) => {
 
 ipcMain.handle('get-logs', () => {
   try {
-    if (fs.existsSync(logFile)) {
+    if (logFile && fs.existsSync(logFile)) {
       return fs.readFileSync(logFile, 'utf8');
     }
-    return '';
+    return 'No log file available yet.';
   } catch (err) {
     return `Error reading logs: ${err.message}`;
   }
