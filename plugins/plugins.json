@@ -1,6 +1,7 @@
 [
   "voiceSelector",
   "settings",
+  "logs",
   "systemStatus",
   "weather",
   "starshipStatus",

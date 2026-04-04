@@ -409,6 +409,19 @@ body {
 .obj-threat.none { background: #006; color: #9cf; }
 .obj-threat.unknown { background: #606; color: #faf; }
 
+.logs-container {
+  background: #0a0a0a;
+  color: #0f0;
+  padding: 15px;
+  border-radius: 5px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85em;
+  max-height: 500px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 @media (max-width: 768px) {
   #wrapper {
     flex-direction: column;
