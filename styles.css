@@ -21,6 +21,7 @@
   --elbow-h:     54px;
   --bot-h:       48px;
   --elbow-r:     40px;
+  --sidebar-gutter: 18px;
 
   /* Themeable surface colors (default = TNG orange) */
   --bar-color:          var(--lcars-orange);
@@ -145,7 +146,10 @@ body {
 .elbow-piece.elbow-left {
   flex-shrink: 0;
   width: var(--sidebar-w);
-  background: var(--left-sidebar-color);
+  background:
+    linear-gradient(to right,
+      var(--left-sidebar-color) 0 calc(100% - var(--sidebar-gutter)),
+      #000 calc(100% - var(--sidebar-gutter)) 100%);
   border-bottom-right-radius: var(--elbow-r);
 }
 
@@ -153,7 +157,10 @@ body {
 .elbow-piece.elbow-right {
   flex-shrink: 0;
   width: var(--sidebar-w);
-  background: var(--right-sidebar-color);
+  background:
+    linear-gradient(to left,
+      var(--right-sidebar-color) 0 calc(100% - var(--sidebar-gutter)),
+      #000 calc(100% - var(--sidebar-gutter)) 100%);
   border-bottom-left-radius: var(--elbow-r);
 }
 
@@ -188,10 +195,13 @@ body {
 #left-bar {
   flex-shrink: 0;
   width: var(--sidebar-w);
-  background: var(--left-sidebar-color);
+  background:
+    linear-gradient(to right,
+      var(--left-sidebar-color) 0 calc(100% - var(--sidebar-gutter)),
+      #000 calc(100% - var(--sidebar-gutter)) 100%);
   display: flex;
   flex-direction: column;
-  padding: 14px 10px;
+  padding: 14px 0 14px 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -201,6 +211,7 @@ body {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  padding-right: calc(var(--sidebar-gutter) + 8px);
 }
 
 /* Pushes "Clear" to the bottom of left bar */
@@ -223,10 +234,13 @@ body {
 #plugin-bar {
   flex-shrink: 0;
   width: var(--sidebar-w);
-  background: var(--right-sidebar-color);
+  background:
+    linear-gradient(to left,
+      var(--right-sidebar-color) 0 calc(100% - var(--sidebar-gutter)),
+      #000 calc(100% - var(--sidebar-gutter)) 100%);
   display: flex;
   flex-direction: column;
-  padding: 14px 10px;
+  padding: 14px 10px 14px 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -235,6 +249,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-left: calc(var(--sidebar-gutter) + 8px);
 }
 
 /* ===================================================================
@@ -1039,6 +1054,7 @@ body.alert-red #top-bar {
     --elbow-h:    42px;
     --bot-h:      40px;
     --elbow-r:    30px;
+    --sidebar-gutter: 14px;
   }
 
   #top-bar       { padding: 0 14px 0 18px; gap: 8px; }
@@ -1058,6 +1074,7 @@ body.alert-red #top-bar {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
+    background: inherit;
     padding: 6px;
   }
 
@@ -1066,6 +1083,7 @@ body.alert-red #top-bar {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 4px;
+    padding: 0;
   }
 
   .lcars-button  {
