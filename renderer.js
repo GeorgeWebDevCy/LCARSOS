@@ -243,6 +243,33 @@ document.addEventListener('DOMContentLoaded', () => {
   fullBtn.addEventListener('click', toggleFullscreen);
 
   document.addEventListener('keydown', (e) => {
+    const buttons = document.querySelectorAll('.lcars-button');
+    const focused = document.activeElement;
+    let index = -1;
+    if (focused && focused.classList.contains('lcars-button')) {
+      index = Array.from(buttons).indexOf(focused);
+    }
+
+    if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+      e.preventDefault();
+      if (index === -1) {
+        buttons[0]?.focus();
+      } else {
+        buttons[(index + 1) % buttons.length]?.focus();
+      }
+    }
+    if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
+      e.preventDefault();
+      if (index === -1) {
+        buttons[buttons.length - 1]?.focus();
+      } else {
+        buttons[(index - 1 + buttons.length) % buttons.length]?.focus();
+      }
+    }
+    if (e.code === 'Enter' && focused && focused.classList.contains('lcars-button')) {
+      e.preventDefault();
+      focused.click();
+    }
     if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') {
       toggleTheme();
     }

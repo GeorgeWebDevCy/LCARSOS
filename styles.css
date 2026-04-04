@@ -89,6 +89,16 @@ body {
   background: var(--button-bg-hover);
 }
 
+.lcars-button:focus {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.lcars-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
