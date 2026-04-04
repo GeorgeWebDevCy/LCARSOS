@@ -22,5 +22,25 @@ export function init({ registerButton, playBeep, speak }) {
     }
   }
 
-  setInterval(update, 5000);
+  let intervalId = null;
+  let currentView = 'Status';
+
+  function startInterval() {
+    if (intervalId) clearInterval(intervalId);
+    const settings = window.lcarsSettings || {};
+    const seconds = settings.statusInterval ?? 5;
+    intervalId = setInterval(update, seconds * 1000);
+  }
+
+  startInterval();
+  update();
+
+  window.addEventListener('storage', () => {
+    window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
+    const settings = window.lcarsSettings;
+    const content = document.getElementById('status-panel');
+    if (content && content.innerHTML.includes('Platform:')) {
+      startInterval();
+    }
+  });
 }

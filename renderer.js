@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const pluginArea = document.getElementById('plugin-bar');
 
+  window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
+
   function registerButton(label, handler) {
     const button = document.createElement('button');
     button.className = 'lcars-button';
@@ -37,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (synth.speaking) synth.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate = 1.0;
+    const settings = window.lcarsSettings || {};
+    utter.volume = (settings.ttsVolume ?? 100) / 100;
     const voices = synth.getVoices();
     const stored = localStorage.getItem('lcars-voice');
     let voice = null;
@@ -74,18 +78,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleHum() {
     playBeep();
+    const settings = window.lcarsSettings || {};
+    const volume = (settings.humVolume ?? 30) / 100;
     if (humOsc) {
       humOsc.stop();
       humOsc.disconnect();
       humOsc = null;
+      window.lcarsHumOsc = null;
+      window.lcarsHumGain = null;
       humBtn.textContent = 'Hum';
       speak('Ambient hum disabled');
     } else {
       humOsc = ctx.createOscillator();
+      const humGain = ctx.createGain();
+      humGain.gain.value = volume;
       humOsc.frequency.value = 50;
       humOsc.type = 'sine';
-      humOsc.connect(ctx.destination);
+      humOsc.connect(humGain);
+      humGain.connect(ctx.destination);
       humOsc.start();
+      window.lcarsHumOsc = humOsc;
+      window.lcarsHumGain = humGain;
       humBtn.textContent = 'Mute';
       speak('Ambient hum enabled');
     }
@@ -126,10 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
 
   function playBeep() {
+    const settings = window.lcarsSettings || {};
+    const volume = (settings.beepVolume ?? 50) / 100;
     const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = volume;
     osc.type = 'sine';
     osc.frequency.value = 400 + Math.random() * 400;
-    osc.connect(ctx.destination);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.15);
   }

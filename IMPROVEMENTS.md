@@ -7,7 +7,7 @@
 - Show offline indicator when weather/API fails
 - Fallback content for failed plugin loads
 
-### 2. Settings System
+### 2. Settings System ✅ DONE
 - Persist all user preferences (not just theme/voice)
 - Add settings panel for: volume, update intervals, default view
 - Save button layout order
