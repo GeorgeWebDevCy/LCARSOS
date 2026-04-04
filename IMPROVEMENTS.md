@@ -30,7 +30,7 @@
 - Pan/zoom functionality
 - Constellation lines
 
-### 6. Scanner Improvements
+### 6. Scanner Improvements ✅ DONE
 - Add "detected" objects with random data
 - Add scanning animation with progress
 - Show sensor readings that update
