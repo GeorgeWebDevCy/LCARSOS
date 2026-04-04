@@ -252,6 +252,24 @@ body {
   padding-left: calc(var(--sidebar-gutter) + 8px);
 }
 
+/* Keep panels scrollable without exposing browser scrollbars */
+#left-bar,
+#plugin-bar,
+#content,
+.logs-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#left-bar::-webkit-scrollbar,
+#plugin-bar::-webkit-scrollbar,
+#content::-webkit-scrollbar,
+.logs-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* ===================================================================
    STATUS BAR
    =================================================================== */
