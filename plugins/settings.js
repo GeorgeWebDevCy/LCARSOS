@@ -18,24 +18,34 @@ export function init({ registerButton, playBeep, speak }) {
           </select>
         </div>
         <div class="setting-group">
-          <label>Voice Mode</label>
-          <select id="voice-mode">
-            <option value="browser">Browser TTS</option>
-            <option value="elevenlabs">ElevenLabs (requires API key)</option>
+          <label>Computer Voice</label>
+          <select id="voice-preset">
+            <option value="default">Default</option>
+            <option value="computer">LCARS Computer</option>
+            <option value="computer-slow">LCARS Computer (Slow)</option>
+            <option value="computer-deep">LCARS Computer (Deep)</option>
+            <option value="enterprise">Enterprise</option>
+            <option value="voyager-bridge">Voyager Bridge</option>
           </select>
         </div>
-        <div class="setting-group" id="elevenlabs-config" style="display:none;">
-          <label>ElevenLabs API Key</label>
-          <input type="password" id="elevenlabs-key" placeholder="Enter API Key" style="flex:1;">
-        </div>
-        <div class="setting-group" id="elevenlabs-voice" style="display:none;">
-          <label>ElevenLabs Voice ID</label>
-          <input type="text" id="elevenlabs-voiceid" placeholder="Enter Voice ID" style="flex:1;">
-        </div>
         <div class="setting-group">
-          <label>Browser TTS Rate</label>
+          <label>Custom TTS Rate</label>
           <input type="range" id="tts-rate" min="50" max="150" value="90">
           <span id="tts-rate-value">0.9x</span>
+        </div>
+        <div class="setting-group">
+          <label>Custom TTS Pitch</label>
+          <input type="range" id="tts-pitch" min="50" max="150" value="80">
+          <span id="tts-pitch-value">0.8</span>
+        </div>
+        <div class="setting-group">
+          <label>Computer Effect</label>
+          <select id="computer-effect">
+            <option value="none">None</option>
+            <option value="echo">Echo</option>
+            <option value="reverb">Reverb</option>
+            <option value="radio">Radio</option>
+          </select>
         </div>
         <div class="setting-group">
           <label>Beep Volume</label>
@@ -71,6 +81,7 @@ export function init({ registerButton, playBeep, speak }) {
           </select>
         </div>
         <button class="lcars-button" id="save-settings">Save Settings</button>
+        <button class="lcars-button" id="test-voice">Test Voice</button>
       </div>`;
     content.classList.remove('hidden');
     loadSettings();
@@ -80,10 +91,10 @@ export function init({ registerButton, playBeep, speak }) {
   function loadSettings() {
     const settings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
     document.getElementById('theme-select').value = localStorage.getItem('lcars-theme') || '';
-    document.getElementById('voice-mode').value = localStorage.getItem('lcars-voice-mode') || 'browser';
-    document.getElementById('elevenlabs-key').value = localStorage.getItem('lcars-elevenlabs-key') || '';
-    document.getElementById('elevenlabs-voiceid').value = localStorage.getItem('lcars-elevenlabs-voiceid') || '';
+    document.getElementById('voice-preset').value = localStorage.getItem('lcars-voice-preset') || 'default';
+    document.getElementById('computer-effect').value = localStorage.getItem('lcars-computer-effect') || 'none';
     document.getElementById('tts-rate').value = settings.ttsRate ?? 90;
+    document.getElementById('tts-pitch').value = settings.ttsPitch ?? 80;
     document.getElementById('beep-volume').value = settings.beepVolume ?? 50;
     document.getElementById('hum-volume').value = settings.humVolume ?? 30;
     document.getElementById('tts-volume').value = settings.ttsVolume ?? 100;
@@ -91,7 +102,6 @@ export function init({ registerButton, playBeep, speak }) {
     document.getElementById('status-interval').value = settings.statusInterval ?? 5;
     document.getElementById('default-view').value = settings.defaultView ?? '';
     updateLabels();
-    updateElevenLabsVisibility();
   }
 
   function updateLabels() {
@@ -99,53 +109,36 @@ export function init({ registerButton, playBeep, speak }) {
     document.getElementById('hum-value').textContent = document.getElementById('hum-volume').value + '%';
     document.getElementById('tts-value').textContent = document.getElementById('tts-volume').value + '%';
     document.getElementById('tts-rate-value').textContent = (document.getElementById('tts-rate').value / 100).toFixed(1) + 'x';
-  }
-
-  function updateElevenLabsVisibility() {
-    const mode = document.getElementById('voice-mode').value;
-    const config = document.getElementById('elevenlabs-config');
-    const voice = document.getElementById('elevenlabs-voice');
-    if (mode === 'elevenlabs') {
-      config.style.display = 'flex';
-      voice.style.display = 'flex';
-    } else {
-      config.style.display = 'none';
-      voice.style.display = 'none';
-    }
+    document.getElementById('tts-pitch-value').textContent = (document.getElementById('tts-pitch').value / 100).toFixed(1);
   }
 
   function setupListeners() {
-    ['beep-volume', 'hum-volume', 'tts-volume', 'tts-rate'].forEach(id => {
+    ['beep-volume', 'hum-volume', 'tts-volume', 'tts-rate', 'tts-pitch'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateLabels);
     });
 
-    document.getElementById('voice-mode').addEventListener('change', updateElevenLabsVisibility);
-
-    document.getElementById('save-settings').addEventListener('click', async () => {
+    document.getElementById('save-settings').addEventListener('click', () => {
       playBeep();
       const theme = document.getElementById('theme-select').value;
-      const voiceMode = document.getElementById('voice-mode').value;
+      const voicePreset = document.getElementById('voice-preset').value;
+      const computerEffect = document.getElementById('computer-effect').value;
       const settings = {
         beepVolume: parseInt(document.getElementById('beep-volume').value),
         humVolume: parseInt(document.getElementById('hum-volume').value),
         ttsVolume: parseInt(document.getElementById('tts-volume').value),
         ttsRate: parseInt(document.getElementById('tts-rate').value),
+        ttsPitch: parseInt(document.getElementById('tts-pitch').value),
         weatherInterval: parseInt(document.getElementById('weather-interval').value),
         statusInterval: parseInt(document.getElementById('status-interval').value),
         defaultView: document.getElementById('default-view').value,
-        voiceMode: voiceMode
+        voicePreset: voicePreset,
+        computerEffect: computerEffect
       };
       
       localStorage.setItem('lcars-settings', JSON.stringify(settings));
       localStorage.setItem('lcars-theme', theme);
-      localStorage.setItem('lcars-voice-mode', voiceMode);
-      
-      if (voiceMode === 'elevenlabs') {
-        const apiKey = document.getElementById('elevenlabs-key').value;
-        const voiceId = document.getElementById('elevenlabs-voiceid').value;
-        localStorage.setItem('lcars-elevenlabs-key', apiKey);
-        localStorage.setItem('lcars-elevenlabs-voiceid', voiceId);
-      }
+      localStorage.setItem('lcars-voice-preset', voicePreset);
+      localStorage.setItem('lcars-computer-effect', computerEffect);
       
       window.lcarsSettings = settings;
       
@@ -163,6 +156,11 @@ export function init({ registerButton, playBeep, speak }) {
       const content = document.getElementById('content');
       content.innerHTML = '<p class="success">Settings saved successfully.</p>';
       setTimeout(() => content.classList.add('hidden'), 2000);
+    });
+
+    document.getElementById('test-voice').addEventListener('click', () => {
+      playBeep();
+      speak('LCARS interface operational. All systems nominal.');
     });
   }
 }

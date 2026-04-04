@@ -45,52 +45,129 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
 
+  const voicePresets = {
+    default: { rate: 1.0, pitch: 1.0 },
+    'computer': { rate: 0.9, pitch: 0.8 },
+    'computer-slow': { rate: 0.7, pitch: 0.8 },
+    'computer-deep': { rate: 0.85, pitch: 0.6 },
+    'enterprise': { rate: 0.95, pitch: 0.9 },
+    'voyager-bridge': { rate: 0.85, pitch: 0.85 }
+  };
+
   async function speak(text) {
-    const voiceMode = localStorage.getItem('lcars-voice-mode') || 'browser';
-    
-    if (voiceMode === 'elevenlabs') {
-      const apiKey = localStorage.getItem('lcars-elevenlabs-key');
-      const voiceId = localStorage.getItem('lcars-elevenlabs-voiceid');
-      
-      if (apiKey && voiceId) {
-        try {
-          const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-            method: 'POST',
-            headers: {
-              'Accept': 'audio/mpeg',
-              'Content-Type': 'application/json',
-              'xi-api-key': apiKey
-            },
-            body: JSON.stringify({
-              text: text,
-              model_id: 'eleven_monolingual_v1',
-              voice_settings: {
-                stability: 0.5,
-                similarity_boost: 0.8
-              }
-            })
-          });
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio.play();
-            return;
-          }
-        } catch (err) {
-          console.error('ElevenLabs TTS failed:', err);
-        }
-      }
-    }
-    
+    const synth = window.speechSynthesis;
     if (!synth) return;
     if (synth.speaking) synth.cancel();
+    
     const settings = window.lcarsSettings || {};
+    const presetName = localStorage.getItem('lcars-voice-preset') || 'default';
+    const preset = voicePresets[presetName] || voicePresets.default;
+    const effect = localStorage.getItem('lcars-computer-effect') || 'none';
+    
     const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = (settings.ttsRate ?? 90) / 100;
-    utter.pitch = 0.8;
+    utter.rate = (settings.ttsRate ?? 100) / 100 * preset.rate;
+    utter.pitch = (settings.ttsPitch ?? 100) / 100 * preset.pitch;
     utter.volume = (settings.ttsVolume ?? 100) / 100;
+    
+    const voices = synth.getVoices();
+    const stored = localStorage.getItem('lcars-voice');
+    let voice = null;
+    if (stored) {
+      voice = voices.find(v => v.name === stored);
+    }
+    if (!voice) {
+      voice = voices.find(v => /en-US/i.test(v.lang)) || 
+              voices.find(v => /en/i.test(v.lang));
+    }
+    if (!voice) {
+      voice = voices.find(v => v.name.includes('Microsoft') || v.name.includes('Google'));
+    }
+    if (voice) utter.voice = voice;
+    
+    if (effect !== 'none') {
+      utter.onend = () => {
+        applyAudioEffect(text, effect);
+      };
+    }
+    
+    synth.speak(utter);
+  }
+
+  function applyAudioEffect(text, effect) {
+    if (!window.AudioContext) return;
+    
+    const ctx = window.lcarsAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    window.lcarsAudioCtx = ctx;
+    
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const filterNode = ctx.createBiquadFilter();
+    
+    const settings = window.lcarsSettings || {};
+    gainNode.gain.value = (settings.ttsVolume ?? 100) / 100 * 0.3;
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+    
+    filterNode.type = 'lowpass';
+    filterNode.frequency.setValueAtTime(2000, ctx.currentTime);
+    
+    if (effect === 'echo') {
+      filterNode.frequency.setValueAtTime(1000, ctx.currentTime);
+      const delay = ctx.createDelay();
+      delay.delayTime.value = 0.15;
+      const feedback = ctx.createGain();
+      feedback.gain.value = 0.3;
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      filterNode.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay);
+      delay.connect(ctx.destination);
+      gainNode.connect(ctx.destination);
+    } else if (effect === 'reverb') {
+      filterNode.frequency.setValueAtTime(1500, ctx.currentTime);
+      const convolver = ctx.createConvolver();
+      const rate = ctx.sampleRate;
+      const length = rate * 1.5;
+      const impulse = ctx.createBuffer(2, length, rate);
+      for (let channel = 0; channel < 2; channel++) {
+        const channelData = impulse.getChannelData(channel);
+        for (let i = 0; i < length; i++) {
+          channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+        }
+      }
+      convolver.buffer = impulse;
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      filterNode.connect(convolver);
+      convolver.connect(ctx.destination);
+      gainNode.connect(ctx.destination);
+    } else if (effect === 'radio') {
+      filterNode.type = 'bandpass';
+      filterNode.frequency.setValueAtTime(1000, ctx.currentTime);
+      filterNode.Q.setValueAtTime(1, ctx.currentTime);
+      const noise = ctx.createBufferSource();
+      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+      const noiseData = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < noiseData.length; i++) {
+        noiseData[i] = Math.random() * 2 - 1;
+      }
+      noise.buffer = noiseBuffer;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.value = 0.02;
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noise.start();
+      noise.stop(ctx.currentTime + 0.5);
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(ctx.destination);
+    }
+    
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.3);
+  }
     
     const voices = synth.getVoices();
     const stored = localStorage.getItem('lcars-voice');
