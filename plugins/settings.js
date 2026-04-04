@@ -154,8 +154,11 @@ export function init({ registerButton, playBeep, speak }) {
       
       speak('Settings saved');
       const content = document.getElementById('content');
-      content.innerHTML = '<p class="success">Settings saved successfully.</p>';
-      setTimeout(() => content.classList.add('hidden'), 2000);
+      const banner = document.createElement('p');
+      banner.className = 'success';
+      banner.textContent = 'Settings saved successfully.';
+      content.prepend(banner);
+      setTimeout(() => banner.remove(), 2500);
     });
 
     document.getElementById('test-voice').addEventListener('click', () => {
