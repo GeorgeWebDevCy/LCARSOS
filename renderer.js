@@ -6,22 +6,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearBtn = document.getElementById('clear-btn');
   const themeBtn = document.getElementById('theme-btn');
   const humBtn = document.getElementById('hum-btn');
+  const alertBtn = document.getElementById('alert-btn');
   const fullBtn = document.getElementById('fullscreen-btn');
   const clock = document.getElementById('clock');
+  const content = document.getElementById('content');
+
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   let humOsc = null;
   const synth = window.speechSynthesis;
 
-  const pluginArea = document.getElementById('plugin-bar').querySelector('.buttons-container');
+  const pluginArea = document.getElementById('plugin-buttons');
 
   window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
+
+  // Theme cycle order
+  const themes = ['', 'alt', 'classic', 'ds9', 'tng', 'voyager'];
+  const themeNames = ['Default', 'Alt', 'Classic', 'DS9', 'TNG', 'Voyager'];
+
+  // Alert state
+  let currentAlert = 'normal';
+
+  // Voice presets
+  const voicePresets = {
+    default: { rate: 1.0, pitch: 1.0 },
+    computer: { rate: 0.9, pitch: 0.8 },
+    'computer-slow': { rate: 0.7, pitch: 0.8 },
+    'computer-deep': { rate: 0.85, pitch: 0.6 },
+    enterprise: { rate: 0.95, pitch: 0.9 },
+    'voyager-bridge': { rate: 0.85, pitch: 0.85 }
+  };
+
+  // ===== Plugin registration =====
 
   function registerButton(label, handler) {
     const button = document.createElement('button');
     button.className = 'lcars-button';
     button.textContent = label;
     button.addEventListener('click', () => {
-      const content = document.getElementById('content');
       content.classList.add('animating-out');
       setTimeout(() => {
         content.classList.remove('animating-out');
@@ -35,40 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadFont(name, url) {
     const font = new FontFace(name, `url(${url})`);
-    return font.load().then(() => {
-      document.fonts.add(font);
-    });
+    return font.load().then(() => { document.fonts.add(font); });
   }
 
   loadFont('Share Tech Mono', 'https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQ5mRY1yo.woff2');
   loadFont('Orbitron', 'https://fonts.gstatic.com/s/orbitron/v30/yMJRMIlzdpvBhQQL_Qq7dytiyr2GqCJDM8c.woff2');
 
-  window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
-
-  const voicePresets = {
-    default: { rate: 1.0, pitch: 1.0 },
-    'computer': { rate: 0.9, pitch: 0.8 },
-    'computer-slow': { rate: 0.7, pitch: 0.8 },
-    'computer-deep': { rate: 0.85, pitch: 0.6 },
-    'enterprise': { rate: 0.95, pitch: 0.9 },
-    'voyager-bridge': { rate: 0.85, pitch: 0.85 }
-  };
+  // ===== TTS =====
 
   async function speak(text) {
-    const synth = window.speechSynthesis;
     if (!synth) return;
     if (synth.speaking) synth.cancel();
-    
+
     const settings = window.lcarsSettings || {};
-    const presetName = localStorage.getItem('lcars-voice-preset') || 'default';
-    const preset = voicePresets[presetName] || voicePresets.default;
+    const presetName = localStorage.getItem('lcars-voice-preset') || 'computer';
+    const preset = voicePresets[presetName] || voicePresets.computer;
     const effect = localStorage.getItem('lcars-computer-effect') || 'none';
-    
+
     const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = (settings.ttsRate ?? 100) / 100 * preset.rate;
-    utter.pitch = (settings.ttsPitch ?? 100) / 100 * preset.pitch;
+    utter.rate = (settings.ttsRate ?? 90) / 100 * preset.rate;
+    utter.pitch = (settings.ttsPitch ?? 80) / 100 * preset.pitch;
     utter.volume = (settings.ttsVolume ?? 100) / 100;
-    
+
     const voices = synth.getVoices();
     const stored = localStorage.getItem('lcars-voice');
     let voice = null;
@@ -76,137 +85,173 @@ document.addEventListener('DOMContentLoaded', () => {
       voice = voices.find(v => v.name === stored);
     }
     if (!voice) {
-      voice = voices.find(v => /en-US/i.test(v.lang)) || 
-              voices.find(v => /en/i.test(v.lang));
+      voice = voices.find(v => /en-US/i.test(v.lang)) || voices.find(v => /en/i.test(v.lang));
     }
     if (!voice) {
       voice = voices.find(v => v.name.includes('Microsoft') || v.name.includes('Google'));
     }
     if (voice) utter.voice = voice;
-    
+
     if (effect !== 'none') {
-      utter.onend = () => {
-        applyAudioEffect(text, effect);
-      };
+      utter.onend = () => applyAudioEffect(effect);
     }
-    
+
     synth.speak(utter);
   }
 
-  function applyAudioEffect(text, effect) {
-    if (!window.AudioContext) return;
-    
-    const ctx = window.lcarsAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    window.lcarsAudioCtx = ctx;
-    
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    const filterNode = ctx.createBiquadFilter();
-    
+  function applyAudioEffect(effect) {
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+
+    const audioCtx = window.lcarsAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    window.lcarsAudioCtx = audioCtx;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
     const settings = window.lcarsSettings || {};
-    gainNode.gain.value = (settings.ttsVolume ?? 100) / 100 * 0.3;
-    
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
-    
-    filterNode.type = 'lowpass';
-    filterNode.frequency.setValueAtTime(2000, ctx.currentTime);
-    
+    gain.gain.value = (settings.ttsVolume ?? 100) / 100 * 0.2;
+    osc.type = 'sine';
+    osc.frequency.value = 200;
+    filter.type = 'lowpass';
+    filter.frequency.value = 2000;
+
     if (effect === 'echo') {
-      filterNode.frequency.setValueAtTime(1000, ctx.currentTime);
-      const delay = ctx.createDelay();
+      filter.frequency.value = 1000;
+      const delay = audioCtx.createDelay();
       delay.delayTime.value = 0.15;
-      const feedback = ctx.createGain();
-      feedback.gain.value = 0.3;
-      oscillator.connect(filterNode);
-      filterNode.connect(gainNode);
-      filterNode.connect(delay);
-      delay.connect(feedback);
-      feedback.connect(delay);
-      delay.connect(ctx.destination);
-      gainNode.connect(ctx.destination);
+      const fb = audioCtx.createGain();
+      fb.gain.value = 0.3;
+      osc.connect(filter);
+      filter.connect(gain);
+      filter.connect(delay);
+      delay.connect(fb);
+      fb.connect(delay);
+      delay.connect(audioCtx.destination);
+      gain.connect(audioCtx.destination);
     } else if (effect === 'reverb') {
-      filterNode.frequency.setValueAtTime(1500, ctx.currentTime);
-      const convolver = ctx.createConvolver();
-      const rate = ctx.sampleRate;
-      const length = rate * 1.5;
-      const impulse = ctx.createBuffer(2, length, rate);
-      for (let channel = 0; channel < 2; channel++) {
-        const channelData = impulse.getChannelData(channel);
-        for (let i = 0; i < length; i++) {
-          channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
-        }
+      filter.frequency.value = 1500;
+      const conv = audioCtx.createConvolver();
+      const rate = audioCtx.sampleRate;
+      const len = rate * 1.5;
+      const imp = audioCtx.createBuffer(2, len, rate);
+      for (let c = 0; c < 2; c++) {
+        const d = imp.getChannelData(c);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
       }
-      convolver.buffer = impulse;
-      oscillator.connect(filterNode);
-      filterNode.connect(gainNode);
-      filterNode.connect(convolver);
-      convolver.connect(ctx.destination);
-      gainNode.connect(ctx.destination);
+      conv.buffer = imp;
+      osc.connect(filter);
+      filter.connect(gain);
+      filter.connect(conv);
+      conv.connect(audioCtx.destination);
+      gain.connect(audioCtx.destination);
     } else if (effect === 'radio') {
-      filterNode.type = 'bandpass';
-      filterNode.frequency.setValueAtTime(1000, ctx.currentTime);
-      filterNode.Q.setValueAtTime(1, ctx.currentTime);
-      const noise = ctx.createBufferSource();
-      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
-      const noiseData = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < noiseData.length; i++) {
-        noiseData[i] = Math.random() * 2 - 1;
-      }
-      noise.buffer = noiseBuffer;
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.02;
-      noise.connect(noiseGain);
-      noiseGain.connect(ctx.destination);
+      filter.type = 'bandpass';
+      filter.frequency.value = 1000;
+      filter.Q.value = 1;
+      const noise = audioCtx.createBufferSource();
+      const nb = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.5, audioCtx.sampleRate);
+      const nd = nb.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+      noise.buffer = nb;
+      const ng = audioCtx.createGain();
+      ng.gain.value = 0.02;
+      noise.connect(ng);
+      ng.connect(audioCtx.destination);
       noise.start();
-      noise.stop(ctx.currentTime + 0.5);
-      oscillator.connect(filterNode);
-      filterNode.connect(gainNode);
-      gainNode.connect(ctx.destination);
+      noise.stop(audioCtx.currentTime + 0.5);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
     }
-    
-    oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.3);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
   }
-    
-    const voices = synth.getVoices();
-    const stored = localStorage.getItem('lcars-voice');
-    let voice = null;
-    if (stored) {
-      voice = voices.find(v => v.name === stored);
-    }
-    if (!voice) {
-      voice = voices.find(v => /en-US/i.test(v.lang)) || 
-              voices.find(v => /en/i.test(v.lang));
-    }
-    if (!voice) {
-      voice = voices.find(v => v.name.includes('Microsoft') || v.name.includes('Google'));
-    }
-    if (voice) utter.voice = voice;
-    synth.speak(utter);
+
+  // ===== Stardate =====
+
+  function calculateStardate() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const dayFraction = (now - start) / (365.25 * 24 * 60 * 60 * 1000);
+    // TNG-era projection: 2020 ~= stardate 77000, +1000 per year
+    const sd = 77000 + ((now.getFullYear() - 2020) * 1000) + (dayFraction * 1000);
+    return sd.toFixed(1);
   }
+
+  function updateStardate() {
+    const sd = calculateStardate();
+    const el = document.getElementById('stardate-display');
+    const ft = document.getElementById('stardate-footer');
+    if (el) el.textContent = `SD ${sd}`;
+    if (ft) ft.textContent = `STARDATE ${sd}`;
+  }
+
+  // ===== Status bar =====
+
+  function setStatus(text) {
+    const el = document.getElementById('last-action-text');
+    if (el) el.textContent = text.toUpperCase();
+  }
+
+  // ===== Alert system =====
+
+  function setAlert(level) {
+    currentAlert = level;
+    const dot = document.getElementById('alert-dot');
+    const label = document.getElementById('alert-label');
+
+    document.body.classList.remove('alert-normal', 'alert-yellow', 'alert-red');
+    document.body.classList.add(`alert-${level}`);
+
+    if (dot) dot.className = `alert-dot ${level}`;
+    if (label) {
+      if (level === 'red') {
+        label.textContent = 'RED ALERT';
+        speak('Red alert! Red alert! All hands to battle stations!');
+      } else if (level === 'yellow') {
+        label.textContent = 'YELLOW ALERT';
+        speak('Yellow alert. All hands stand by.');
+      } else {
+        label.textContent = 'NORMAL OPERATIONS';
+        speak('Standing down from alert status.');
+      }
+    }
+    playBeep();
+  }
+
+  // ===== Theme =====
 
   function applyStoredTheme() {
-    const theme = localStorage.getItem('lcars-theme');
-    if (theme === 'alt') {
-      document.body.setAttribute('data-theme', 'alt');
+    const theme = localStorage.getItem('lcars-theme') || '';
+    if (theme) {
+      document.body.setAttribute('data-theme', theme);
+    } else {
+      document.body.removeAttribute('data-theme');
     }
   }
   applyStoredTheme();
 
   function toggleTheme() {
     playBeep();
-    const isAlt = document.body.getAttribute('data-theme') === 'alt';
-    if (isAlt) {
-      document.body.removeAttribute('data-theme');
-      localStorage.setItem('lcars-theme', 'default');
-      speak('Default theme activated');
+    const current = localStorage.getItem('lcars-theme') || '';
+    const idx = themes.indexOf(current);
+    const next = (idx + 1) % themes.length;
+    const nextTheme = themes[next];
+    const nextName = themeNames[next];
+
+    if (nextTheme) {
+      document.body.setAttribute('data-theme', nextTheme);
     } else {
-      document.body.setAttribute('data-theme', 'alt');
-      localStorage.setItem('lcars-theme', 'alt');
-      speak('Alternate theme engaged');
+      document.body.removeAttribute('data-theme');
     }
+    localStorage.setItem('lcars-theme', nextTheme);
+    speak(`${nextName} theme engaged`);
+    setStatus(`Theme: ${nextName}`);
   }
+
+  // ===== Hum =====
 
   function toggleHum() {
     playBeep();
@@ -220,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.lcarsHumGain = null;
       humBtn.textContent = 'Hum';
       speak('Ambient hum disabled');
+      setStatus('Hum off');
     } else {
       humOsc = ctx.createOscillator();
       const humGain = ctx.createGain();
@@ -233,42 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
       window.lcarsHumGain = humGain;
       humBtn.textContent = 'Mute';
       speak('Ambient hum enabled');
+      setStatus('Hum on');
     }
   }
 
   function toggleFullscreen() {
     playBeep();
-    speak('Toggling fullscreen');
     window.electronAPI.toggleFullscreen();
+    setStatus('Fullscreen toggled');
   }
 
-  async function loadPlugins() {
-    try {
-      const res = await fetch('plugins/plugins.json');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const plugins = await res.json();
-      for (const name of plugins) {
-        try {
-          const mod = await import(`./plugins/${name}.js`);
-          if (mod.init) {
-            mod.init({ registerButton, playBeep, speak });
-          }
-        } catch (pluginErr) {
-          console.error(`Plugin ${name} failed to load:`, pluginErr);
-        }
-      }
-    } catch (err) {
-      console.error('Plugin loading failed', err);
-    }
-  }
-  loadPlugins();
-
-  function updateClock() {
-    const now = new Date();
-    clock.textContent = now.toLocaleTimeString();
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
+  // ===== Beep =====
 
   function playBeep() {
     const settings = window.lcarsSettings || {};
@@ -284,9 +305,79 @@ document.addEventListener('DOMContentLoaded', () => {
     osc.stop(ctx.currentTime + 0.15);
   }
 
+  // ===== Home panel =====
+
+  function showHomePanel() {
+    const sd = calculateStardate();
+    const now = new Date();
+    content.innerHTML = `
+      <div class="lcars-home">
+        <div class="lcars-home-header">
+          <h1>LCARS INTERFACE</h1>
+          <p>LIBRARY COMPUTER ACCESS &amp; RETRIEVAL SYSTEM</p>
+        </div>
+        <div class="home-grid">
+          <div class="home-cell">
+            <div class="home-cell-label">Stardate</div>
+            <div class="home-cell-value">${sd}</div>
+          </div>
+          <div class="home-cell">
+            <div class="home-cell-label">Earth Time</div>
+            <div class="home-cell-value" id="home-time">${now.toLocaleTimeString()}</div>
+          </div>
+          <div class="home-cell">
+            <div class="home-cell-label">Alert Status</div>
+            <div class="home-cell-value home-status-normal">NORMAL</div>
+          </div>
+          <div class="home-cell">
+            <div class="home-cell-label">Systems</div>
+            <div class="home-cell-value home-status-nominal">NOMINAL</div>
+          </div>
+        </div>
+        <p class="lcars-tagline">SELECT A FUNCTION FROM THE NAVIGATION PANEL</p>
+      </div>`;
+    setStatus('System ready');
+  }
+
+  // ===== Plugin loader =====
+
+  async function loadPlugins() {
+    try {
+      const res = await fetch('plugins/plugins.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const plugins = await res.json();
+      for (const name of plugins) {
+        try {
+          const mod = await import(`./plugins/${name}.js`);
+          if (mod.init) {
+            mod.init({ registerButton, playBeep, speak });
+          }
+        } catch (pluginErr) {
+          console.error(`Plugin ${name} failed:`, pluginErr);
+        }
+      }
+    } catch (err) {
+      console.error('Plugin loading failed', err);
+    }
+  }
+
+  // ===== Clock =====
+
+  function updateClock() {
+    clock.textContent = new Date().toLocaleTimeString();
+    updateStardate();
+    const homeTime = document.getElementById('home-time');
+    if (homeTime) homeTime.textContent = new Date().toLocaleTimeString();
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ===== Button handlers =====
+
   btn.addEventListener('click', () => {
     playBeep();
     speak('Accessing series database');
+    setStatus('Loading database...');
     btn.textContent = 'Loading...';
     fetch('star_trek_series.json')
       .then(res => {
@@ -294,117 +385,114 @@ document.addEventListener('DOMContentLoaded', () => {
         return res.json();
       })
       .then(data => {
-        const content = document.getElementById('content');
+        content.classList.add('animating-in');
         const list = document.createElement('ul');
         data.forEach(series => {
           const item = document.createElement('li');
           item.textContent = `${series.title} (${series.begin.split('-')[0]})`;
           list.appendChild(item);
         });
-        content.innerHTML = '<h2>Star Trek Series</h2>';
+        content.innerHTML = '<h2>Star Trek Series Database</h2>';
         content.appendChild(list);
-        content.classList.remove('hidden');
-        btn.textContent = 'Activate';
-        speak('Displaying Star Trek series');
+        setTimeout(() => content.classList.remove('animating-in'), 400);
+        btn.textContent = 'Database';
+        speak('Star Trek series database displayed');
+        setStatus('Database loaded');
       })
       .catch(err => {
         console.error('Series fetch failed', err);
-        const content = document.getElementById('content');
         content.innerHTML = '<p class="error">Data unavailable. Please try again.</p>';
-        content.classList.remove('hidden');
-        btn.textContent = 'Activate';
+        btn.textContent = 'Database';
         speak('Data unavailable');
+        setStatus('Error: data unavailable');
       });
   });
 
   quoteBtn.addEventListener('click', () => {
     playBeep();
     quoteBtn.textContent = 'Loading...';
-    speak('Fetching quote');
+    speak('Accessing quote database');
+    setStatus('Fetching quote...');
     fetch('star_trek_quotes.json')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then(data => {
-        const content = document.getElementById('content');
         const random = data[Math.floor(Math.random() * data.length)];
-        content.innerHTML = `<h2>${random.author}</h2><p>${random.text}</p>`;
-        content.classList.remove('hidden');
-        quoteBtn.textContent = 'Random Quote';
+        content.innerHTML = `
+          <h2>${random.author}</h2>
+          <p style="font-size:1.1em;line-height:1.8;color:#ddd;font-style:italic;padding:12px 0">"${random.text}"</p>`;
+        quoteBtn.textContent = 'Quote';
         speak(random.text);
+        setStatus('Quote retrieved');
       })
       .catch(err => {
         console.error('Quote fetch failed', err);
-        const content = document.getElementById('content');
         content.innerHTML = '<p class="error">Quote database unavailable.</p>';
-        content.classList.remove('hidden');
-        quoteBtn.textContent = 'Random Quote';
+        quoteBtn.textContent = 'Quote';
         speak('Quote unavailable');
+        setStatus('Error: quotes unavailable');
       });
   });
 
   sysInfoBtn.addEventListener('click', async () => {
     playBeep();
     speak('Gathering system information');
+    setStatus('Loading system info...');
     sysInfoBtn.textContent = 'Loading...';
     const info = await window.electronAPI.getSystemInfo();
-    const content = document.getElementById('content');
-    content.innerHTML = `<h2>System Info</h2>
+    content.innerHTML = `
+      <h2>System Information</h2>
       <ul>
-        <li>Platform: ${info.platform}</li>
-        <li>Architecture: ${info.arch}</li>
-        <li>CPU Cores: ${info.cpus}</li>
-        <li>Total Memory: ${info.memory} GB</li>
+        <li>Platform: <span style="color:#66cc33">${info.platform}</span></li>
+        <li>Architecture: <span style="color:#66cc33">${info.arch}</span></li>
+        <li>CPU Cores: <span style="color:#66cc33">${info.cpus}</span></li>
+        <li>Total Memory: <span style="color:#66cc33">${info.memory} GB</span></li>
       </ul>`;
-    content.classList.remove('hidden');
-    sysInfoBtn.textContent = 'System Info';
-    speak('System information displayed');
+    sysInfoBtn.textContent = 'System';
+    speak(`System running on ${info.platform}, ${info.cpus} cores, ${info.memory} gigabytes memory`);
+    setStatus('System info displayed');
   });
 
   clearBtn.addEventListener('click', () => {
     playBeep();
-    const content = document.getElementById('content');
-    content.classList.add('hidden');
-    content.innerHTML = '';
-    speak('Display cleared');
+    showHomePanel();
+    speak('Display reset');
   });
 
   themeBtn.addEventListener('click', toggleTheme);
   humBtn.addEventListener('click', toggleHum);
   fullBtn.addEventListener('click', toggleFullscreen);
 
+  if (alertBtn) {
+    alertBtn.addEventListener('click', () => {
+      const levels = ['normal', 'yellow', 'red'];
+      const idx = levels.indexOf(currentAlert);
+      setAlert(levels[(idx + 1) % levels.length]);
+    });
+  }
+
+  // ===== Keyboard nav =====
+
   document.addEventListener('keydown', (e) => {
-    const buttons = document.querySelectorAll('.lcars-button');
+    const buttons = Array.from(document.querySelectorAll('.lcars-button'));
     const focused = document.activeElement;
-    let index = -1;
-    if (focused && focused.classList.contains('lcars-button')) {
-      index = Array.from(buttons).indexOf(focused);
-    }
+    const index = focused?.classList.contains('lcars-button') ? buttons.indexOf(focused) : -1;
 
     if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
       e.preventDefault();
-      if (index === -1) {
-        buttons[0]?.focus();
-      } else {
-        buttons[(index + 1) % buttons.length]?.focus();
-      }
+      buttons[index === -1 ? 0 : (index + 1) % buttons.length]?.focus();
     }
     if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
       e.preventDefault();
-      if (index === -1) {
-        buttons[buttons.length - 1]?.focus();
-      } else {
-        buttons[(index - 1 + buttons.length) % buttons.length]?.focus();
-      }
+      buttons[index === -1 ? buttons.length - 1 : (index - 1 + buttons.length) % buttons.length]?.focus();
     }
-    if (e.code === 'Enter' && focused && focused.classList.contains('lcars-button')) {
+    if (e.code === 'Enter' && focused?.classList.contains('lcars-button')) {
       e.preventDefault();
       focused.click();
     }
-    if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') {
-      toggleTheme();
-    }
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') toggleTheme();
     if (e.code === 'F11') {
       e.preventDefault();
       toggleFullscreen();
@@ -412,7 +500,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   exitBtn.addEventListener('click', () => {
-    speak('Shutting down');
-    window.electronAPI.closeApp();
+    speak('Shutting down. Goodbye.');
+    setStatus('Shutting down...');
+    setTimeout(() => window.electronAPI.closeApp(), 1500);
   });
+
+  // ===== Init =====
+
+  loadPlugins();
+  showHomePanel();
+  updateStardate();
 });
