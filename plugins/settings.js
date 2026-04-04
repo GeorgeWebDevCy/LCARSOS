@@ -7,6 +7,15 @@ export function init({ registerButton, playBeep, speak }) {
       <div class="settings-panel">
         <h2>System Settings</h2>
         <div class="setting-group">
+          <label>Color Theme</label>
+          <select id="theme-select">
+            <option value="">Default</option>
+            <option value="alt">Alt</option>
+            <option value="classic">Classic</option>
+            <option value="ds9">DS9</option>
+          </select>
+        </div>
+        <div class="setting-group">
           <label>Beep Volume</label>
           <input type="range" id="beep-volume" min="0" max="100" value="50">
           <span id="beep-value">50%</span>
@@ -20,6 +29,11 @@ export function init({ registerButton, playBeep, speak }) {
           <label>TTS Volume</label>
           <input type="range" id="tts-volume" min="0" max="100" value="100">
           <span id="tts-value">100%</span>
+        </div>
+        <div class="setting-group">
+          <label>TTS Rate</label>
+          <input type="range" id="tts-rate" min="50" max="150" value="90">
+          <span id="tts-rate-value">0.9x</span>
         </div>
         <div class="setting-group">
           <label>Weather Update Interval (seconds)</label>
@@ -48,9 +62,11 @@ export function init({ registerButton, playBeep, speak }) {
 
   function loadSettings() {
     const settings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
+    document.getElementById('theme-select').value = localStorage.getItem('lcars-theme') || '';
     document.getElementById('beep-volume').value = settings.beepVolume ?? 50;
     document.getElementById('hum-volume').value = settings.humVolume ?? 30;
     document.getElementById('tts-volume').value = settings.ttsVolume ?? 100;
+    document.getElementById('tts-rate').value = settings.ttsRate ?? 90;
     document.getElementById('weather-interval').value = settings.weatherInterval ?? 60;
     document.getElementById('status-interval').value = settings.statusInterval ?? 5;
     document.getElementById('default-view').value = settings.defaultView ?? '';
@@ -61,25 +77,34 @@ export function init({ registerButton, playBeep, speak }) {
     document.getElementById('beep-value').textContent = document.getElementById('beep-volume').value + '%';
     document.getElementById('hum-value').textContent = document.getElementById('hum-volume').value + '%';
     document.getElementById('tts-value').textContent = document.getElementById('tts-volume').value + '%';
+    document.getElementById('tts-rate-value').textContent = (document.getElementById('tts-rate').value / 100).toFixed(1) + 'x';
   }
 
   function setupListeners() {
-    ['beep-volume', 'hum-volume', 'tts-volume'].forEach(id => {
+    ['beep-volume', 'hum-volume', 'tts-volume', 'tts-rate'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateLabels);
     });
 
     document.getElementById('save-settings').addEventListener('click', () => {
       playBeep();
+      const theme = document.getElementById('theme-select').value;
       const settings = {
         beepVolume: parseInt(document.getElementById('beep-volume').value),
         humVolume: parseInt(document.getElementById('hum-volume').value),
         ttsVolume: parseInt(document.getElementById('tts-volume').value),
+        ttsRate: parseInt(document.getElementById('tts-rate').value),
         weatherInterval: parseInt(document.getElementById('weather-interval').value),
         statusInterval: parseInt(document.getElementById('status-interval').value),
         defaultView: document.getElementById('default-view').value
       };
       localStorage.setItem('lcars-settings', JSON.stringify(settings));
+      localStorage.setItem('lcars-theme', theme);
       window.lcarsSettings = settings;
+      if (theme) {
+        document.body.setAttribute('data-theme', theme);
+      } else {
+        document.body.removeAttribute('data-theme');
+      }
       if (window.lcarsHumOsc && window.lcarsHumGain) {
         window.lcarsHumGain.gain.value = settings.humVolume / 100;
       }

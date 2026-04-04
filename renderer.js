@@ -43,13 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFont('Share Tech Mono', 'https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQ5mRY1yo.woff2');
   loadFont('Orbitron', 'https://fonts.gstatic.com/s/orbitron/v30/yMJRMIlzdpvBhQQL_Qq7dytiyr2GqCJDM8c.woff2');
 
+  window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
+
   function speak(text) {
     if (!synth) return;
     if (synth.speaking) synth.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 1.0;
     const settings = window.lcarsSettings || {};
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = (settings.ttsRate ?? 90) / 100;
+    utter.pitch = 0.8;
     utter.volume = (settings.ttsVolume ?? 100) / 100;
+    
     const voices = synth.getVoices();
     const stored = localStorage.getItem('lcars-voice');
     let voice = null;
@@ -57,7 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
       voice = voices.find(v => v.name === stored);
     }
     if (!voice) {
-      voice = voices.find(v => /en/i.test(v.lang));
+      voice = voices.find(v => /en-US/i.test(v.lang)) || 
+              voices.find(v => /en/i.test(v.lang));
+    }
+    if (!voice) {
+      voice = voices.find(v => v.name.includes('Microsoft') || v.name.includes('Google'));
     }
     if (voice) utter.voice = voice;
     synth.speak(utter);

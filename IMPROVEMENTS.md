@@ -100,3 +100,32 @@
 - Add event bus for plugin communication
 - Create a plugin API spec for third-party plugins
 - Add TypeScript for better maintainability
+
+## UI Authenticity Improvements
+
+### 1. Classic LCARS Layout
+- Add "elbow" connectors between sidebar and main content
+- Remove the gap - LCARS has continuous curved panels
+- Add the characteristic curved dividers between sections
+
+### 2. Authentic LCARS Fonts
+- Use "Bernhard" or similar condensed serif for headers (download locally)
+- Add the distinctive "7-segment" style numbers for displays
+
+### 3. Color Schemes
+- Add proper LCARS primary colors (orange #FF9900, purple #CC99CC, etc.)
+- Create proper color palettes based on TNG era
+
+### 4. UI Elements
+- Add proper LCARS button shapes with rounded ends
+- Add status bars with the characteristic dividers
+- Add the "elbow" connectors at top of sidebars
+- Add number displays with authentic styling
+
+### 5. Voice Improvements
+- Use more authentic Star Trek style phrases
+- Add LCARS-style system announcements
+- Make TTS sound more "computer-like"
+- Add voice option for LCARS "computer" voice style
+
+## Implemented

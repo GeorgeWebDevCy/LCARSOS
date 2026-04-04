@@ -1,17 +1,40 @@
 :root {
-  --panel-bg: #9932CC;
-  --button-bg: #FF6633;
-  --button-bg-hover: #FF9966;
-  --top-bg: #330066;
+  --lcars-orange: #ff9900;
+  --lcars-purple: #cc99cc;
+  --lcars-red: #ff3333;
+  --lcars-yellow: #ffcc00;
+  --lcars-blue: #99ccff;
+  --lcars-green: #99ff99;
+  --lcars-pink: #ff99cc;
+  --lcars-bg: #000;
+  --panel-bg: #cc99cc;
+  --button-bg: #ff9900;
+  --button-bg-hover: #ffb84d;
+  --top-bg: #ffcc00;
   --text-color: #fff;
   --body-bg: #000;
+  --divider-color: #666;
 }
 
 body[data-theme='alt'] {
   --panel-bg: #003366;
-  --button-bg: #6699FF;
-  --button-bg-hover: #99BBFF;
+  --button-bg: #99ccff;
+  --button-bg-hover: #bbddff;
   --top-bg: #001133;
+}
+
+body[data-theme='classic'] {
+  --panel-bg: #ff9900;
+  --button-bg: #cc99cc;
+  --button-bg-hover: #ddbadd;
+  --top-bg: #ff3333;
+}
+
+body[data-theme='ds9'] {
+  --panel-bg: #99ccff;
+  --button-bg: #ffcc00;
+  --button-bg-hover: #ffdd55;
+  --top-bg: #006699;
 }
 
 #wrapper {
@@ -23,13 +46,13 @@ body[data-theme='alt'] {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 10px 20px;
+  padding: 8px 30px 8px 20px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
   font-family: 'Orbitron', sans-serif;
   background: var(--top-bg);
-  border-bottom-left-radius: 20px;
+  clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%, 0 20px);
 }
 
 body {
@@ -40,32 +63,103 @@ body {
   overflow: hidden;
 }
 
-#left-bar,
-#plugin-bar,
-.side-bar {
-  width: 200px;
+#left-bar {
+  position: relative;
+  width: 180px;
   background: var(--panel-bg);
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 20px;
+  padding: 60px 10px 20px 10px;
+  gap: 8px;
+}
+
+#left-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: var(--panel-bg);
+  clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
+}
+
+#left-bar::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  right: -30px;
+  width: 30px;
+  height: calc(100% - 30px);
+  background: var(--panel-bg);
+  clip-path: polygon(0 0, 100% 30px, 100% 100%, 0 100%);
+}
+
+#plugin-bar {
+  position: relative;
+  width: 180px;
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 60px 10px 20px 10px;
+  gap: 8px;
+}
+
+#plugin-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: var(--panel-bg);
+  clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
+}
+
+#plugin-bar::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  right: -30px;
+  width: 30px;
+  height: calc(100% - 30px);
+  background: var(--panel-bg);
+  clip-path: polygon(0 0, 100% 30px, 100% 100%, 0 100%);
+}
+
+.lcars-divider {
+  width: 100%;
+  height: 3px;
+  background: var(--body-bg);
+  margin: 5px 0;
+}
+
+.lcars-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7em;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
 }
 
 #content {
   flex: 1;
   background: var(--body-bg);
-  padding: 40px;
+  padding: 30px;
   overflow-y: auto;
-  animation: fadeIn 1s ease forwards;
+  animation: fadeIn 0.5s ease forwards;
   font-size: 1.1em;
 }
 
 #content.animating-out {
-  animation: fadeOut 0.3s ease forwards;
+  animation: fadeOut 0.2s ease forwards;
 }
 
 @keyframes fadeOut {
@@ -84,7 +178,7 @@ body {
 }
 
 #content.animating-in {
-  animation: slideIn 0.4s ease forwards;
+  animation: slideIn 0.3s ease forwards;
 }
 
 .hidden {
@@ -94,22 +188,51 @@ body {
 .lcars-button {
   background: var(--button-bg);
   border: none;
-  padding: 15px 30px;
-  font-size: 1.2em;
+  padding: 10px 25px;
+  font-size: 0.95em;
   color: #000;
-  border-radius: 5px;
   cursor: pointer;
   font-family: 'Orbitron', sans-serif;
-  transition: background 0.3s ease;
+  transition: background 0.2s ease;
+  position: relative;
+  min-width: 140px;
 }
 
-.lcars-button.small {
-  padding: 5px 15px;
-  font-size: 0.9em;
+.lcars-button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 15px;
+  height: 100%;
+  background: inherit;
+  border-radius: 25px 0 0 25px;
+}
+
+.lcars-button::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 15px;
+  height: 100%;
+  background: inherit;
+  border-radius: 0 25px 25px 0;
 }
 
 .lcars-button:hover {
   background: var(--button-bg-hover);
+}
+
+.lcars-button.small {
+  padding: 5px 15px;
+  font-size: 0.8em;
+  min-width: 60px;
+}
+
+.lcars-button.small::before,
+.lcars-button.small::after {
+  width: 10px;
 }
 
 .lcars-button:focus {
@@ -122,12 +245,16 @@ body {
   outline-offset: 2px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.lcars-button.rounded {
+  border-radius: 20px;
 }
 
-/* Scanner overlay inspired by louh/lcars */
+.lcars-button.rounded::before,
+.lcars-button.rounded::after {
+  display: none;
+}
+
+/* Scanner overlay */
 #content {
   position: relative;
 }
@@ -139,6 +266,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .scanner {
@@ -278,6 +406,7 @@ body {
   transition: width 0.5s ease;
 }
 
+/* Error/Success states */
 .error {
   color: #ff6;
   padding: 20px;
@@ -285,6 +414,14 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
+.success {
+  color: #6f6;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* Settings panel */
 .settings-panel {
   max-width: 500px;
   margin: 0 auto;
@@ -323,17 +460,12 @@ body {
   font-family: 'Share Tech Mono', monospace;
 }
 
-.success {
-  color: #6f6;
-  padding: 20px;
-  text-align: center;
-  font-family: 'Orbitron', sans-serif;
-}
-
+/* Weather container */
 .weather-container button {
   margin-top: 20px;
 }
 
+/* Star chart container */
 .star-chart-container {
   display: flex;
   flex-direction: column;
@@ -352,6 +484,7 @@ body {
   color: #ff6;
 }
 
+/* Scanner full */
 .scanner-full {
   display: flex;
   flex-direction: column;
@@ -409,6 +542,7 @@ body {
 .obj-threat.none { background: #006; color: #9cf; }
 .obj-threat.unknown { background: #606; color: #faf; }
 
+/* Logs container */
 .logs-container {
   background: #0a0a0a;
   color: #0f0;
@@ -422,82 +556,98 @@ body {
   word-break: break-all;
 }
 
+/* LCARS-style displays */
+.lcars-display {
+  background: #111;
+  border: 2px solid var(--panel-bg);
+  padding: 15px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.lcars-display-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8em;
+  color: var(--panel-bg);
+  margin-bottom: 5px;
+}
+
+.lcars-display-value {
+  font-size: 1.5em;
+  color: var(--lcars-green);
+  letter-spacing: 2px;
+}
+
+/* Status indicator */
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-dot.online { background: #99ff99; }
+.status-dot.offline { background: #ff3333; }
+.status-dot.standby { background: #ffcc00; }
+
+/* LCARS Elbow connector */
+.lcars-elbow {
+  display: none;
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
   #wrapper {
     flex-direction: column;
   }
   
   #left-bar,
-  #plugin-bar,
-  .side-bar {
+  #plugin-bar {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     border-radius: 0;
-    padding: 10px;
-    gap: 10px;
+    padding: 15px 10px;
+    gap: 5px;
   }
   
-  #left-bar {
-    border-top-right-radius: 20px;
-    border-top-left-radius: 20px;
-    order: 2;
-  }
-  
-  #plugin-bar {
-    order: 3;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    border-top-right-radius: 0;
+  #left-bar::before,
+  #left-bar::after,
+  #plugin-bar::before,
+  #plugin-bar::after {
+    display: none;
   }
   
   #content {
-    order: 1;
-    padding: 20px;
+    padding: 15px;
   }
   
   #top-bar {
     position: relative;
     width: 100%;
     border-radius: 0;
-    justify-content: center;
+    clip-path: none;
     padding: 10px;
-    order: 0;
+    justify-content: center;
   }
   
   .lcars-button {
-    padding: 12px 20px;
-    font-size: 1em;
-    min-width: 80px;
-    min-height: 44px;
-  }
-  
-  .lcars-button.small {
-    padding: 8px 12px;
-    font-size: 0.8em;
-    min-width: 60px;
-    min-height: 36px;
-  }
-  
-  #content {
+    padding: 10px 20px;
     font-size: 0.9em;
+    min-width: 100px;
+  }
+  
+  .lcars-button::before,
+  .lcars-button::after {
+    width: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .lcars-button {
-    padding: 10px 15px;
-    font-size: 0.85em;
-    min-width: 70px;
-  }
-  
-  #left-bar,
-  #plugin-bar {
-    gap: 5px;
-  }
-  
-  #content {
-    padding: 15px;
+    padding: 8px 15px;
+    font-size: 0.8em;
+    min-width: 80px;
   }
 }
