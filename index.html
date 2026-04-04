@@ -16,17 +16,22 @@
       <button class="lcars-button small" id="fullscreen-btn">Full</button>
       <button class="lcars-button small" id="exit-btn">Exit</button>
     </div>
-    <div id="left-bar" class="side-bar">
-      <div class="lcars-elbow"></div>
-      <button class="lcars-button" id="main-btn">Activate</button>
-      <button class="lcars-button" id="quote-btn">Random Quote</button>
-      <button class="lcars-button" id="sysinfo-btn">System Info</button>
-      <button class="lcars-button" id="clear-btn">Clear</button>
-    </div>
-    <div id="plugin-bar" class="side-bar">
-      <div class="lcars-elbow"></div>
+    <div id="left-bar">
+      <div class="elbow-top"></div>
+      <div class="buttons-container">
+        <button class="lcars-button" id="main-btn">Activate</button>
+        <button class="lcars-button" id="quote-btn">Quote</button>
+        <button class="lcars-button" id="sysinfo-btn">SysInfo</button>
+        <button class="lcars-button" id="clear-btn">Clear</button>
+      </div>
+      <div class="elbow-bottom"></div>
     </div>
     <div id="content" class="hidden"></div>
+    <div id="plugin-bar">
+      <div class="elbow-top"></div>
+      <div class="buttons-container"></div>
+      <div class="elbow-bottom"></div>
+    </div>
   </div>
   <script type="module" src="renderer.js"></script>
 </body>

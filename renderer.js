@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let humOsc = null;
   const synth = window.speechSynthesis;
 
-  const pluginArea = document.getElementById('plugin-bar');
+  const pluginArea = document.getElementById('plugin-bar').querySelector('.buttons-container');
 
   window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
 
@@ -45,7 +45,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.lcarsSettings = JSON.parse(localStorage.getItem('lcars-settings') || '{}');
 
-  function speak(text) {
+  async function speak(text) {
+    const voiceMode = localStorage.getItem('lcars-voice-mode') || 'browser';
+    
+    if (voiceMode === 'elevenlabs') {
+      const apiKey = localStorage.getItem('lcars-elevenlabs-key');
+      const voiceId = localStorage.getItem('lcars-elevenlabs-voiceid');
+      
+      if (apiKey && voiceId) {
+        try {
+          const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': apiKey
+            },
+            body: JSON.stringify({
+              text: text,
+              model_id: 'eleven_monolingual_v1',
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.8
+              }
+            })
+          });
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio.play();
+            return;
+          }
+        } catch (err) {
+          console.error('ElevenLabs TTS failed:', err);
+        }
+      }
+    }
+    
     if (!synth) return;
     if (synth.speaking) synth.cancel();
     const settings = window.lcarsSettings || {};
