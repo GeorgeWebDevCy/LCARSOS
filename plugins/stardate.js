@@ -25,13 +25,20 @@ export function init({ registerButton, playBeep, speak }) {
     return (77000 + ((now.getFullYear() - 2020) * 1000) + (dayFraction * 1000)).toFixed(1);
   }
 
+  // Speak stardate LCARS-style: "eight three two five seven point three"
+  function stardateToSpeech(sd) {
+    const [whole, frac] = sd.toString().split('.');
+    const digits = whole.split('').join(' ');
+    return frac ? `${digits} point ${frac}` : digits;
+  }
+
   function update() {
     const sdPanel = document.getElementById('stardate-panel');
     const edPanel = document.getElementById('earth-date-panel');
     if (sdPanel) {
       const sd = calcStardate();
       sdPanel.textContent = sd;
-      speak(`Stardate ${sd}`);
+      speak(`Stardate ${stardateToSpeech(sd)}`);
     }
     if (edPanel) {
       edPanel.textContent = new Date().toLocaleString();
