@@ -17,7 +17,7 @@
 - Use browser geolocation API
 - Show forecast (not just current)
 
-### 4. Touch/Mobile Support
+### 4. Touch/Mobile Support ✅ DONE
 - Add touch-friendly button sizes
 - Responsive layout for smaller screens
 - Swipe gestures for panel navigation
