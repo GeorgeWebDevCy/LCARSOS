@@ -16,7 +16,7 @@ const CATEGORY_CONFIG = [
   { type: 'movie', endpoint: 'movie', listKey: 'movies', label: 'Movies', maxRecords: 20 },
   { type: 'species', endpoint: 'species', listKey: 'species', label: 'Species', maxRecords: 500 },
   { type: 'location', endpoint: 'location', listKey: 'locations', label: 'Locations', maxRecords: 300 },
-  { type: 'spacecraft', endpoint: 'spacecraft', listKey: 'spacecraft', label: 'Spacecraft', maxRecords: 300 },
+  { type: 'spacecraft', endpoint: 'spacecraft', listKey: 'spacecrafts', label: 'Spacecraft', maxRecords: 300 },
   { type: 'organization', endpoint: 'organization', listKey: 'organizations', label: 'Organizations', maxRecords: 150 },
   { type: 'weapon', endpoint: 'weapon', listKey: 'weapons', label: 'Weapons', maxRecords: 150 }
 ];
