@@ -20,7 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const button = document.createElement('button');
     button.className = 'lcars-button';
     button.textContent = label;
-    button.addEventListener('click', handler);
+    button.addEventListener('click', () => {
+      const content = document.getElementById('content');
+      content.classList.add('animating-out');
+      setTimeout(() => {
+        content.classList.remove('animating-out');
+        content.classList.add('animating-in');
+        handler();
+        setTimeout(() => content.classList.remove('animating-in'), 400);
+      }, 300);
+    });
     pluginArea.appendChild(button);
   }
 

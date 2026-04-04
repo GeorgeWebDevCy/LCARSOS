@@ -35,12 +35,12 @@
 - Add scanning animation with progress
 - Show sensor readings that update
 
-### 7. Panel Transitions
+### 7. Panel Transitions ✅ DONE
 - Add fade/slide animations between content
 - Use CSS transitions or a library like GSAP
 - Animate button presses
 
-### 8. Audio Mixer
+### 8. Audio Mixer ✅ DONE
 - Volume control for beeps
 - Volume control for ambient hum
 - Separate TTS volume
