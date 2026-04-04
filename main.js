@@ -26,12 +26,11 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1024,
     height: 768,
-    fullscreen: false,
+    fullscreen: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   });
-  win.maximize();
   win.loadFile('index.html');
   win.on('closed', () => log('INFO', 'Window closed'));
 }
