@@ -339,6 +339,286 @@ document.addEventListener('DOMContentLoaded', () => {
     setStatus('System ready');
   }
 
+  async function renderKnowledgeDatabase() {
+    btn.textContent = 'Loading...';
+    setStatus('Accessing internal database...');
+
+    const state = {
+      summary: null,
+      featured: null,
+      results: [],
+      query: '',
+      category: 'all',
+      notice: '',
+      loading: true
+    };
+
+    async function hydrate() {
+      const [summary, randomPayload] = await Promise.all([
+        window.electronAPI.getKnowledgeSummary(),
+        window.electronAPI.getRandomKnowledge({ category: state.category })
+      ]);
+      state.summary = summary;
+      state.featured = randomPayload.entry;
+      if (summary.syncInProgress) {
+        state.notice = 'Synchronizing with upstream STAPI records. Cached data remains available during refresh.';
+      } else if (summary.lastSyncedAt) {
+        state.notice = `Database synced ${new Date(summary.lastSyncedAt).toLocaleString()}.`;
+      } else {
+        state.notice = 'Database sync has not completed yet. Use sync to begin populating records.';
+      }
+    }
+
+    function render() {
+      const summary = state.summary;
+      const categories = summary?.categories || [];
+      const totalRecords = summary?.itemCount || 0;
+      const stats = [
+        { label: 'Records', value: totalRecords.toLocaleString() },
+        { label: 'Source', value: summary?.sourceName || 'STAPI' },
+        { label: 'Status', value: summary?.syncInProgress ? 'Syncing' : 'Ready' },
+        { label: 'Updated', value: summary?.lastSyncedAt ? new Date(summary.lastSyncedAt).toLocaleDateString() : 'Pending' }
+      ];
+
+      content.innerHTML = `
+        <section class="knowledge-shell">
+          <div class="knowledge-header">
+            <div>
+              <div class="knowledge-kicker">Computer Core</div>
+              <h2>Internal Database</h2>
+            </div>
+            <div class="knowledge-stats">
+              ${stats.map((item) => `
+                <div class="knowledge-stat">
+                  <span class="knowledge-stat-label">${item.label}</span>
+                  <span class="knowledge-stat-value">${item.value}</span>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div class="knowledge-toolbar">
+            <input id="knowledge-query" class="knowledge-input" type="search" placeholder="Query the database..." value="${escapeHtml(state.query)}" />
+            <select id="knowledge-category" class="knowledge-select">
+              <option value="all"${state.category === 'all' ? ' selected' : ''}>All Records</option>
+              ${categories.map((item) => `<option value="${item.type}"${state.category === item.type ? ' selected' : ''}>${item.label} (${item.count})</option>`).join('')}
+            </select>
+            <button class="lcars-button small" id="knowledge-search-btn">Search</button>
+            <button class="lcars-button small" id="knowledge-random-btn">Random</button>
+            <button class="lcars-button small" id="knowledge-sync-btn">${summary?.syncInProgress ? 'Syncing...' : 'Sync'}</button>
+          </div>
+
+          <div class="knowledge-notice">${escapeHtml(state.notice || 'Ready.')}</div>
+
+          <div class="knowledge-layout">
+            <div class="knowledge-featured-panel">
+              ${renderKnowledgeEntry(state.featured, 'Featured Record')}
+            </div>
+            <div class="knowledge-side-panel">
+              <div class="knowledge-panel">
+                <div class="knowledge-panel-label">Indexed Categories</div>
+                <div class="knowledge-category-list">
+                  ${categories.map((item) => `
+                    <button class="knowledge-category-chip${state.category === item.type ? ' active' : ''}" data-category="${item.type}">
+                      <span>${item.label}</span>
+                      <strong>${item.count}</strong>
+                    </button>`).join('')}
+                </div>
+              </div>
+              <div class="knowledge-panel">
+                <div class="knowledge-panel-label">Search Results</div>
+                <div id="knowledge-results">${renderKnowledgeResults(state.results)}</div>
+              </div>
+            </div>
+          </div>
+        </section>`;
+
+      attachHandlers();
+    }
+
+    function attachHandlers() {
+      const queryInput = document.getElementById('knowledge-query');
+      const categorySelect = document.getElementById('knowledge-category');
+      const searchBtn = document.getElementById('knowledge-search-btn');
+      const randomBtn = document.getElementById('knowledge-random-btn');
+      const syncBtn = document.getElementById('knowledge-sync-btn');
+
+      queryInput?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          void runSearch();
+        }
+      });
+
+      searchBtn?.addEventListener('click', () => {
+        void runSearch();
+      });
+
+      randomBtn?.addEventListener('click', () => {
+        void runRandom();
+      });
+
+      syncBtn?.addEventListener('click', () => {
+        void runSync();
+      });
+
+      categorySelect?.addEventListener('change', () => {
+        state.category = categorySelect.value;
+        void runRandom(true);
+      });
+
+      document.querySelectorAll('.knowledge-category-chip').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.category = button.dataset.category;
+          const select = document.getElementById('knowledge-category');
+          if (select) select.value = state.category;
+          void runRandom(true);
+        });
+      });
+
+      document.querySelectorAll('.knowledge-result-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          const match = state.results.find((item) => item.id === button.dataset.entryId);
+          if (!match) return;
+          state.featured = match;
+          state.notice = `${match.categoryLabel} record selected.`;
+          speak(`${match.name}`);
+          render();
+        });
+      });
+    }
+
+    async function runSearch() {
+      const queryInput = document.getElementById('knowledge-query');
+      const categorySelect = document.getElementById('knowledge-category');
+      state.query = queryInput?.value?.trim() || '';
+      state.category = categorySelect?.value || 'all';
+      setStatus('Searching database...');
+
+      try {
+        const result = await window.electronAPI.searchKnowledge({
+          query: state.query,
+          category: state.category,
+          limit: 14
+        });
+        state.summary = result.meta;
+        state.results = result.results;
+        state.notice = state.query
+          ? `${result.results.length} result${result.results.length === 1 ? '' : 's'} for "${state.query}".`
+          : `Showing indexed ${state.category === 'all' ? 'records' : state.category} entries.`;
+        if (result.results[0]) {
+          state.featured = result.results[0];
+        }
+        setStatus('Database search complete');
+        render();
+      } catch (error) {
+        console.error('Knowledge search failed', error);
+        state.notice = 'Database search failed. Please try again.';
+        setStatus('Database search failed');
+        render();
+      }
+    }
+
+    async function runRandom(silent = false) {
+      setStatus('Selecting random record...');
+      try {
+        const [summary, randomPayload] = await Promise.all([
+          window.electronAPI.getKnowledgeSummary(),
+          window.electronAPI.getRandomKnowledge({ category: state.category })
+        ]);
+        state.summary = summary;
+        state.results = [];
+        state.query = '';
+        state.featured = randomPayload.entry;
+        state.notice = randomPayload.entry
+          ? `Random ${randomPayload.entry.categoryLabel.toLowerCase()} record selected.`
+          : 'No records available in that category yet.';
+        if (!silent && randomPayload.entry) {
+          speak(`${randomPayload.entry.name}`);
+        }
+        setStatus('Random record selected');
+        render();
+      } catch (error) {
+        console.error('Random knowledge failed', error);
+        state.notice = 'Random record unavailable.';
+        setStatus('Random selection failed');
+        render();
+      }
+    }
+
+    async function runSync() {
+      setStatus('Synchronizing database...');
+      state.notice = 'Synchronizing with STAPI. This may take a little while on the first run.';
+      render();
+      try {
+        await window.electronAPI.syncKnowledgeBase({ force: true });
+        await hydrate();
+        state.results = [];
+        setStatus('Database synchronized');
+        render();
+      } catch (error) {
+        console.error('Knowledge sync failed', error);
+        state.notice = `Synchronization failed: ${error.message}`;
+        setStatus('Database sync failed');
+        render();
+      }
+    }
+
+    try {
+      await hydrate();
+      state.loading = false;
+      btn.textContent = 'Database';
+      setStatus(state.summary?.syncInProgress ? 'Database sync in progress' : 'Database ready');
+      render();
+    } catch (error) {
+      console.error('Knowledge database failed', error);
+      content.innerHTML = '<p class="error">Internal database unavailable. Please try again.</p>';
+      btn.textContent = 'Database';
+      setStatus('Database unavailable');
+      speak('Internal database unavailable');
+    }
+  }
+
+  function renderKnowledgeEntry(entry, eyebrow) {
+    if (!entry) {
+      return `
+        <div class="knowledge-panel">
+          <div class="knowledge-panel-label">${eyebrow}</div>
+          <div class="knowledge-empty">No records cached yet. Run a sync to populate the database.</div>
+        </div>`;
+    }
+
+    return `
+      <div class="knowledge-panel featured">
+        <div class="knowledge-panel-label">${eyebrow}</div>
+        <div class="knowledge-entry-title">${escapeHtml(entry.name)}</div>
+        <div class="knowledge-entry-subtitle">${escapeHtml(entry.subtitle || entry.categoryLabel)}</div>
+        <p class="knowledge-entry-summary">${escapeHtml(entry.summary || 'No summary available.')}</p>
+        ${entry.detail ? `<div class="knowledge-entry-detail">${escapeHtml(entry.detail)}</div>` : ''}
+        <div class="knowledge-entry-meta">${escapeHtml(entry.categoryLabel)}</div>
+      </div>`;
+  }
+
+  function renderKnowledgeResults(results) {
+    if (!results.length) {
+      return '<div class="knowledge-empty">No active result set. Run a search or request a random record.</div>';
+    }
+
+    return results.map((entry) => `
+      <button class="knowledge-result-item" data-entry-id="${escapeHtml(entry.id)}">
+        <span class="knowledge-result-title">${escapeHtml(entry.name)}</span>
+        <span class="knowledge-result-subtitle">${escapeHtml(entry.subtitle || entry.categoryLabel)}</span>
+        <span class="knowledge-result-summary">${escapeHtml(entry.summary || 'No summary available.')}</span>
+      </button>`).join('');
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+  }
+
   // ===== Plugin loader =====
 
   async function loadPlugins() {
@@ -376,36 +656,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btn.addEventListener('click', () => {
     playBeep();
-    speak('Accessing series database');
-    setStatus('Loading database...');
-    btn.textContent = 'Loading...';
-    fetch('star_trek_series.json')
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        content.classList.add('animating-in');
-        const list = document.createElement('ul');
-        data.forEach(series => {
-          const item = document.createElement('li');
-          item.textContent = `${series.title} (${series.begin.split('-')[0]})`;
-          list.appendChild(item);
-        });
-        content.innerHTML = '<h2>Star Trek Series Database</h2>';
-        content.appendChild(list);
-        setTimeout(() => content.classList.remove('animating-in'), 400);
-        btn.textContent = 'Database';
-        speak('Star Trek series database displayed');
-        setStatus('Database loaded');
-      })
-      .catch(err => {
-        console.error('Series fetch failed', err);
-        content.innerHTML = '<p class="error">Data unavailable. Please try again.</p>';
-        btn.textContent = 'Database';
-        speak('Data unavailable');
-        setStatus('Error: data unavailable');
-      });
+    speak('Accessing internal database');
+    void renderKnowledgeDatabase();
   });
 
   quoteBtn.addEventListener('click', () => {

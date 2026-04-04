@@ -1,6 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const {
+  initializeKnowledgeBase,
+  getKnowledgeSummary,
+  searchKnowledge,
+  getRandomKnowledge,
+  syncKnowledgeBase
+} = require('./knowledgeBase');
 
 let logFile = null;
 
@@ -44,10 +51,14 @@ app.whenReady().then(() => {
   try {
     const logDir = app.getPath('userData');
     logFile = path.join(logDir, 'lcars.log');
+    initializeKnowledgeBase({ dataDir: logDir, log });
   } catch (e) {
     console.error('Could not get userData path:', e.message);
   }
   log('INFO', 'App starting');
+  void syncKnowledgeBase({ force: false }).catch((err) => {
+    log('ERROR', `Initial knowledge sync failed: ${err.message}`);
+  });
   createWindow();
 });
 
@@ -95,3 +106,11 @@ ipcMain.handle('get-logs', () => {
     return `Error reading logs: ${err.message}`;
   }
 });
+
+ipcMain.handle('knowledge-summary', async () => getKnowledgeSummary());
+
+ipcMain.handle('knowledge-search', async (event, payload) => searchKnowledge(payload || {}));
+
+ipcMain.handle('knowledge-random', async (event, payload) => getRandomKnowledge(payload || {}));
+
+ipcMain.handle('knowledge-sync', async (event, payload) => syncKnowledgeBase(payload || {}));

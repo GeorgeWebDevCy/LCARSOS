@@ -5,7 +5,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSystemInfo: () => ipcRenderer.invoke('get-system-info'),
   toggleFullscreen: () => ipcRenderer.send('toggle-fullscreen'),
   log: (level, message) => ipcRenderer.send('log', level, message),
-  getLogs: () => ipcRenderer.invoke('get-logs')
+  getLogs: () => ipcRenderer.invoke('get-logs'),
+  getKnowledgeSummary: () => ipcRenderer.invoke('knowledge-summary'),
+  searchKnowledge: (payload) => ipcRenderer.invoke('knowledge-search', payload),
+  getRandomKnowledge: (payload) => ipcRenderer.invoke('knowledge-random', payload),
+  syncKnowledgeBase: (payload) => ipcRenderer.invoke('knowledge-sync', payload)
 });
 
 window.onerror = (message, source, line, col, error) => {
