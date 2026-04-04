@@ -82,6 +82,18 @@ export function init({ registerButton, playBeep, speak }) {
     currentLat = parseFloat(savedLat);
     currentLon = parseFloat(savedLon);
     locationName = 'Saved Location';
+  } else if (navigator.geolocation) {
+    // Auto-detect location on first run
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        currentLat = pos.coords.latitude;
+        currentLon = pos.coords.longitude;
+        locationName = 'Your Location';
+        localStorage.setItem('lcars-weather-lat', currentLat);
+        localStorage.setItem('lcars-weather-lon', currentLon);
+      },
+      () => { /* silently keep San Francisco default */ }
+    );
   }
 
   let intervalId = null;
