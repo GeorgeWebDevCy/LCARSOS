@@ -12,7 +12,7 @@
 - Add settings panel for: volume, update intervals, default view
 - Save button layout order
 
-### 3. Weather Improvements
+### 3. Weather Improvements ✅ DONE
 - Add location input or detect via IP
 - Use browser geolocation API
 - Show forecast (not just current)

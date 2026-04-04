@@ -296,3 +296,7 @@ body {
   text-align: center;
   font-family: 'Orbitron', sans-serif;
 }
+
+.weather-container button {
+  margin-top: 20px;
+}
