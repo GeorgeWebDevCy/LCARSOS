@@ -15,7 +15,6 @@ export function init({ registerButton, playBeep, speak }) {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background stars
     for (let i = 0; i < 100; i++) {
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height;
@@ -26,9 +25,9 @@ export function init({ registerButton, playBeep, speak }) {
       ctx.fill();
     }
 
-    // Load star names
     try {
       const res = await fetch('plugins/star-systems.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const stars = await res.json();
       for (let i = 0; i < 10; i++) {
         const x = Math.random() * canvas.width;
@@ -43,6 +42,9 @@ export function init({ registerButton, playBeep, speak }) {
       }
     } catch (err) {
       console.error('Star chart data failed', err);
+      ctx.fillStyle = '#ff6';
+      ctx.font = '20px Orbitron, sans-serif';
+      ctx.fillText('Star data unavailable', 300, 300);
     }
   }
 }

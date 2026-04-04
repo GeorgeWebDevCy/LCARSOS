@@ -11,13 +11,14 @@ export function init({ registerButton, playBeep, speak }) {
   async function update() {
     try {
       const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const weather = data.current_weather;
       const panel = document.getElementById('weather-panel');
       if (panel) {
         panel.innerHTML = `
           <ul>
-            <li>Temperature: ${weather.temperature}\xB0C</li>
+            <li>Temperature: ${weather.temperature}°C</li>
             <li>Wind Speed: ${weather.windspeed} km/h</li>
             <li>Conditions: ${weather.weathercode}</li>
           </ul>`;
@@ -25,6 +26,11 @@ export function init({ registerButton, playBeep, speak }) {
       }
     } catch (err) {
       console.error('Weather fetch failed', err);
+      const panel = document.getElementById('weather-panel');
+      if (panel) {
+        panel.innerHTML = '<p class="error">Weather data unavailable. Check internet connection.</p>';
+      }
+      speak('Weather data unavailable');
     }
   }
 

@@ -100,11 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadPlugins() {
     try {
       const res = await fetch('plugins/plugins.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const plugins = await res.json();
       for (const name of plugins) {
-        const mod = await import(`./plugins/${name}.js`);
-        if (mod.init) {
-          mod.init({ registerButton, playBeep, speak });
+        try {
+          const mod = await import(`./plugins/${name}.js`);
+          if (mod.init) {
+            mod.init({ registerButton, playBeep, speak });
+          }
+        } catch (pluginErr) {
+          console.error(`Plugin ${name} failed to load:`, pluginErr);
         }
       }
     } catch (err) {
@@ -134,7 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
     speak('Accessing series database');
     btn.textContent = 'Loading...';
     fetch('star_trek_series.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         const content = document.getElementById('content');
         const list = document.createElement('ul');
@@ -148,6 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
         content.classList.remove('hidden');
         btn.textContent = 'Activate';
         speak('Displaying Star Trek series');
+      })
+      .catch(err => {
+        console.error('Series fetch failed', err);
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="error">Data unavailable. Please try again.</p>';
+        content.classList.remove('hidden');
+        btn.textContent = 'Activate';
+        speak('Data unavailable');
       });
   });
 
@@ -156,7 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
     quoteBtn.textContent = 'Loading...';
     speak('Fetching quote');
     fetch('star_trek_quotes.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         const content = document.getElementById('content');
         const random = data[Math.floor(Math.random() * data.length)];
@@ -164,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
         content.classList.remove('hidden');
         quoteBtn.textContent = 'Random Quote';
         speak(random.text);
+      })
+      .catch(err => {
+        console.error('Quote fetch failed', err);
+        const content = document.getElementById('content');
+        content.innerHTML = '<p class="error">Quote database unavailable.</p>';
+        content.classList.remove('hidden');
+        quoteBtn.textContent = 'Random Quote';
+        speak('Quote unavailable');
       });
   });
 
