@@ -356,8 +356,16 @@ body.alert-red #top-bar {
 
 /* Right sidebar buttons align text right */
 #plugin-bar .lcars-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 52px;
   text-align: right;
   background: var(--right-sidebar-color);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.15;
 }
 
 .lcars-button:hover  { filter: brightness(1.3); }
