@@ -370,6 +370,10 @@ body.alert-red #top-bar {
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
+  box-shadow:
+    0 0 0 2px #000,
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.18);
 }
 
 /* Right sidebar buttons align text right */
@@ -405,6 +409,9 @@ body.alert-red #top-bar {
   background: rgba(0,0,0,0.22);
   color: #000;
   letter-spacing: 0.5px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 .lcars-button.small:hover {
@@ -422,6 +429,13 @@ body.alert-red #top-bar {
 .btn-green  { background: var(--lcars-green)   !important; }
 .btn-pink   { background: var(--lcars-pink)    !important; }
 .btn-tan    { background: var(--lcars-tan)     !important; }
+
+#left-bar .buttons-container,
+#plugin-bar .buttons-container,
+.star-chart-controls,
+.knowledge-toolbar {
+  isolation: isolate;
+}
 
 /* ===================================================================
    CONTENT AREA ANIMATIONS
